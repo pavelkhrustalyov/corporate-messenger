@@ -1,6 +1,7 @@
 import Room, { IRoomSchema } from "../models/Room";
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
+import User from "../models/User";
 
 export const getRooms = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -92,12 +93,76 @@ export const deleteRoom = async (req: Request, res: Response, next: NextFunction
 };
 
 export const inviteToGroupRoom = async (req: Request, res: Response, next: NextFunction) => {
-    const { recipientId, roomId } = req.body;
+    const { roomId, participants } = req.body;
 
     try {
-     
+        const room = await Room.findOne({ _id: roomId });
+
+        if (!room) {
+            res.status(404);
+            throw new Error('Комната не найдена');
+        }
+
+        if (String(room?.creator) !== String(req.user?._id)) {
+            res.status(401);
+            throw new Error('Права на приглашение есть только у создателя группы');
+        }
+        
+        if (!Array.isArray(participants) || participants.length === 0) {
+            res.status(400);
+            throw new Error('Некорректный формат участников');
+        }
+
+        // Добавляем участников в комнату
+        const result = await room.updateOne({ 
+            $push: { participants: { $each: participants } } 
+        });
+
+        if (result.nModified === 0) {
+            res.status(500);
+            throw new Error('Не удалось пригласить участников');
+        }
+
+        return res.json({ message: 'Участники успешно приглашены в комнату' });
 
     } catch (error) {
         next(error);
     }
 };
+
+export const kickOutOfGroup = async (req: Request, res: Response, next: NextFunction) => {
+    const { recipientId, roomId } = req.params;
+
+    try {
+        
+        if (recipientId == req.user?._id.toString()) {
+            res.status(400);
+            throw new Error('Вы не можете добавить себя');
+        }
+
+        const recipientUser = await User.findOne({ _id: recipientId });
+        const room = await Room.findOne({ _id: roomId });
+       
+        if (!recipientUser) {
+            res.status(404);
+            throw new Error('Пользователь не найден');
+        }
+
+        if (String(room?.creator) !== String(req.user?._id)) {
+            res.status(401);
+            throw new Error('Права на приглашение есть только у создателя группы');
+        }
+
+        if (!room) {
+            res.status(404);
+            throw new Error('Комната не найдена');
+        }
+
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+// get room
