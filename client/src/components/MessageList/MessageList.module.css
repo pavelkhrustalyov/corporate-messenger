@@ -1,0 +1,16 @@
+.message-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 10px;
+    height: 75vh;
+    overflow-y: scroll;
+    background-color: var(--bg-support-color);
+    /* background-image: url("https://www.hitechstore.gr/assets/front/images/pattern-icons/4.png"); */
+    /* background-image: url("https://catherineasquithgallery.com/uploads/posts/2023-01/1674253603_catherineasquithgallery-com-p-fon-vatsap-serii-foto-27.jpg"); */
+
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}

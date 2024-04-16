@@ -1,0 +1,20 @@
+.button {
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    font-size: 18px;
+    border-radius: 3px;
+    color: var(--text-main-color);
+}
+
+.button.primary {
+    background-color: var(--ui-main-color);
+}
+
+.button.danger {
+    background-color: var(--ui-danger-color);
+}
+
+.button.transparent {
+    background-color: transparent;
+}

@@ -1,0 +1,21 @@
+.chat-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 86.5vh;
+    flex: 1;
+    background-color: var(--bg-main-color);
+    background-image: url("https://catherineasquithgallery.com/uploads/posts/2023-02/1676627059_catherineasquithgallery-com-p-fon-dlya-chata-zelenii-1.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.text {
+    padding: 15px;
+    background-color: var(--bg-support-color);
+    opacity: 0.8;
+    color: var(--text-main-color);
+    font-size: 25px;
+    border-radius: 5px;
+}

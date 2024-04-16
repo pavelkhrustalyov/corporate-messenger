@@ -1,0 +1,38 @@
+.auth {
+    display: flex;
+    padding: 10px;
+    min-width: 400px;
+    flex-direction: column;
+    background-color: var(--form-wrap-color);
+    border-radius: 3px;
+}
+
+.heading {
+    min-width: 400px;
+    margin: 0;
+    padding: 10px;
+    text-align: center;
+    color: var(--text-main-color);
+    background-color: var(--bg-main-color);
+    opacity: 0.8;
+    border-radius: 3px;
+}
+
+.field {
+    margin-bottom: 10px;
+    border-radius: 3px;
+}
+
+.question {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    color: var(--text-main-color);
+}
+
+.question a {
+    font-weight: bold;
+    color: var(--text-main-color);
+    margin-left: 10px;
+}

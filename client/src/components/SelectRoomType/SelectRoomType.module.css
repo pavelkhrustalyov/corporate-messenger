@@ -1,0 +1,14 @@
+.room-type {
+    display: flex;
+    justify-content: space-around;
+    padding: 19px;
+    background-color: var(--bg-main-color);
+    color: var(--text-main-color);
+    border-bottom: 1px solid var(--separate-color);
+}
+
+.room-type__icon {
+    font-size: 35px;
+    cursor: pointer;
+    color: var(--icon-color);
+}

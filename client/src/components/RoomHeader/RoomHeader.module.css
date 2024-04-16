@@ -1,0 +1,26 @@
+.room-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px;
+    background-color: var(--bg-main-color);
+    color: var(--text-main-color);
+    transition: 0.2s all;
+    border-bottom: 1px solid var(--separate-color);
+}
+
+.title {
+    cursor: pointer;
+}
+
+.more {
+    padding: 5px;
+    border-radius: 5px;
+    color: var(--icon-color);
+    font-size: 25px;
+    cursor: pointer;
+}
+
+.more-btn {
+    padding: 5px;
+}

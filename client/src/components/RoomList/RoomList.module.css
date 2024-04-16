@@ -1,0 +1,17 @@
+.room-list {
+    height: 85vh;
+    overflow-y: scroll;
+}
+
+.room-empty {
+    display: flex;
+    padding: 10px;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    font-weight: bold;
+    background-color: var(--bg-support-color);
+    opacity: 0.8;
+    border-radius: 3px;
+    color: var(--text-main-color);
+}

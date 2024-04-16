@@ -1,0 +1,11 @@
+.textarea {
+    background-color: var(--bg-main-color);
+    color: var(--text-main-color);
+    outline: none;
+}
+
+.textarea::placeholder {
+    vertical-align: bottom;
+    font-size: 17px;
+    color: var(--placeholder-color);
+}

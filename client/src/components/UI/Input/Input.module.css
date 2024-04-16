@@ -1,0 +1,19 @@
+.input {
+    padding: 10px;
+    font-size: 17px;
+    background-color: var(--bg-main-color);
+    border: none;
+    color: var(--text-main-color);
+    outline: none;
+}
+
+.file {
+    font-size: 30px;
+    padding: 10px;
+    color: var(--icon-color);
+    cursor: pointer;
+}
+
+.input-file {
+    display: none;
+}

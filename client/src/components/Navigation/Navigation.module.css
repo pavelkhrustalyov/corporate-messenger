@@ -1,0 +1,20 @@
+.navigation {
+    background-color: var(--bg-main-color);
+    color: var(--text-main-color);
+    border-bottom: 1px solid var(--separate-color);
+}
+
+.burger {
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--icon-color);
+}
+
+.btn-more {
+    display: flex;
+    align-items: center;
+}
+
+.name {
+    margin-left: 10px;
+}

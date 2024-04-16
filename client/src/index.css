@@ -1,0 +1,56 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Open Sans", sans-serif;
+    background-image: url("https://fonoteka.top/uploads/posts/2022-02/1645148901_4-phonoteka-org-p-temnie-foni-dlya-telegramma-5.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+:root {
+    /* -- DARK THEME */
+    --bg-main-color: #18212c;
+    --bg-support-color: #0f1621;
+    --main-hover: #1e2a35;
+    --ui-main-color: #2a5278;
+    --ui-danger-color: tomato;
+    --online-color: lightgreen;
+    --offline-color: tomato;
+    --text-main-color: white;
+    --text-support-color: rgba(108, 127, 147);
+    --icon-color: #575f71;
+    --message-self-color: #2a5278;
+    --message-recipient-color: #182533;
+    --date-color: #ccc;
+    --group-sender-color: #90ee8f;
+    --separate-color: black;
+    --form-wrap-color: #575f71;
+    --placeholder-color: #999;
+    --link-color: rgb(62, 62, 188); 
+    --status-border-color: white;
+   
+
+    /* -- */
+
+    /* -- LIGHT THEME */
+    /* --bg-main-color: #fff;
+    --bg-support-color: #ededed;
+    --main-hover: lightgreen;
+    --ui-main-color: lightgreen;
+    --ui-danger-color: tomato;
+    --online-color: rgb(174, 174, 90);
+    --offline-color: tomato;
+    --text-main-color: black;
+    --text-support-color: rgba(108, 127, 147);
+    --icon-color: rgb(173, 173, 173);
+    --message-self-color: rgb(236, 255, 215);
+    --message-recipient-color: white;
+    --date-color: #999;
+    --group-sender-color: #90ee8f;
+    --separate-color: rgb(212, 204, 204);
+    --form-wrap-color: #575f71;
+    --placeholder-color: #999;
+    --link-color: rgb(62, 62, 188);
+    --status-border-color: white; */
+}
