@@ -6,8 +6,8 @@ export interface IRoomSchema extends Document {
     title?: string; 
     participants: Schema.Types.ObjectId[];
     recipientId?: string;
-    lastMessage: String;
-    imageGroup?: string | 'default-group.jpg';
+    lastMessage: string;
+    imageGroup?: string;
 }
 
 const RoomSchema = new Schema<IRoomSchema>({

@@ -1,3 +1,9 @@
+<<<<<<< HEAD
 node_modules
 dist
 .DS_Store
+=======
+/dist
+/node_modules
+/.DS_Store
+>>>>>>> 02e5ceba5ce68dba161d1bc28dab0a477c7e476e
