@@ -16,6 +16,7 @@ interface RegisterRequest extends LoginRequest {
 
 export const authApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
+        
         login: builder.mutation<IUser, LoginRequest>({
             query: (data) => ({
                 url: `${BASE_URL}/login`,
@@ -39,12 +40,9 @@ export const authApiSlice = apiSlice.injectEndpoints({
         loadUser: builder.query<IUser, void>({
             query: () => `${BASE_URL}/me`
         }),
-        logout: builder.mutation({
-            query: () => ({
-                url: `${BASE_URL}/logout`,
-                method: 'POST'
-            })
-        })
+        logout: builder.mutation<void, void>({
+            query: () => `${BASE_URL}/logout`,
+        }),
     }),
 });
 

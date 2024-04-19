@@ -1,6 +1,8 @@
 import User, { IUserSchema } from "../models/User";
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
+import { unlink } from 'fs/promises';
+import { join } from 'node:path';
 
 export const getUserbyId = async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.params;
@@ -16,7 +18,7 @@ export const getUserbyId = async (req: Request, res: Response, next: NextFunctio
     } catch (error) {
         next(error);
     }
-}
+};
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -58,3 +60,32 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
         next(error);
     }
 }
+
+export const updateAvatar = async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.file) {
+        return res.status(200).json(req.user?.avatar);
+    }
+
+    const filename = req.file.filename;
+
+    const avatarsFolderPath = join(__dirname, '../public/avatars');
+    if (req.user?.avatar !== 'default.png') {
+        try {
+            await unlink(`${avatarsFolderPath}/${req.user?.avatar}`);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    try {
+        const user = await User.findById(req.user?._id);
+        await user?.updateOne({
+            $set: { avatar: filename }
+        })
+        return res.status(201).json(filename);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const updatePassword = async (req: Request, res: Response, next: NextFunction) => {}

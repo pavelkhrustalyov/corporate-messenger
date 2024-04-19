@@ -66,7 +66,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         if (user && (await user.matchPassword(password))) {
             generateToken(res, user._id);
             return res.status(200).json({
-                id: user._id, 
+                _id: user._id, 
                 name: user.name,
                 surname: user.surname,
                 status: user.status,

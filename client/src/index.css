@@ -31,10 +31,10 @@ body {
     --status-border-color: white;
    
 
-    /* -- */
 
     /* -- LIGHT THEME */
-    /* --bg-main-color: #fff;
+
+    --bg-main-color: #fff;
     --bg-support-color: #ededed;
     --main-hover: lightgreen;
     --ui-main-color: lightgreen;
@@ -52,5 +52,5 @@ body {
     --form-wrap-color: #575f71;
     --placeholder-color: #999;
     --link-color: rgb(62, 62, 188);
-    --status-border-color: white; */
+    --status-border-color: white;
 }

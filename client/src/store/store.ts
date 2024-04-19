@@ -3,14 +3,19 @@ import { configureStore } from '@reduxjs/toolkit';
 import { authSlice } from './authSlice/authSlice';
 import { userSlice } from './userSlice/userSlice';
 import { apiSlice } from './apiSlice';
+import { roomSlice } from './roomSLice/roomSlice';
+import { messageSlice } from './messageSlice/messageSlice';
 
 // Создаем Redux store
 export const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
+    rooms: roomSlice.reducer,
     users: userSlice.reducer,
     auth: authSlice.reducer,
+    messages: messageSlice.reducer,
   },
+
   middleware: (getDefaultMiddleware) => getDefaultMiddleware()
     .concat(apiSlice.middleware),
   devTools: true,

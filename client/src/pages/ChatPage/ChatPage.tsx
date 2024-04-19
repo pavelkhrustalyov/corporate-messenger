@@ -1,5 +1,4 @@
 import { ChangeEvent, useEffect, useRef, useState, KeyboardEvent } from 'react';
-import io, { Socket } from 'socket.io-client';
 import styles from './ChatPage.module.css';
 import TextArea from '../../components/UI/TextArea/TextArea';
 import RoomHeader from '../../components/RoomHeader/RoomHeader';
@@ -8,8 +7,13 @@ import Button from '../../components/UI/Button/Button';
 import EmojiPicker from 'emoji-picker-react';
 import { useParams } from 'react-router-dom';
 import { IMessage } from '../../interfaces/IMessage';
-import { BsArrowRightSquareFill, BsFillEmojiSmileFill } from "react-icons/bs";
+import { BsFillEmojiSmileFill } from "react-icons/bs";
 import Input from '../../components/UI/Input/Input';
+import { toast } from 'react-toastify';
+import createSocket from '../../utils/socket';
+import { useDispatch, useSelector } from 'react-redux';
+import { useCreateMessageMutation, useGetMessagesQuery } from '../../store/messageSlice/messageApiSlice';
+import { RootState } from '../../store/store';
 
 type IRoomPageParams = {
     roomId: string;
@@ -18,18 +22,37 @@ type IRoomPageParams = {
 const RoomPage = () => {
     const { roomId } = useParams<IRoomPageParams>();
     const [socket, setSocket] = useState<Socket | null>(null);
-    const [ messages, setMessages ] = useState<IMessage[]>([]);
     const [ text, setText ] = useState<string>('');
+    const [currentFile, setCurrentFile] = useState<File | undefined>(undefined);
     const inputRef = useRef(null);
 
     const [ isOpenEmoji, setIsOpenEmoji ] = useState(false);
 
+    const dispatch = useDispatch();
+
+    const { messages } = useSelector((state: RootState) => state.messages);
+    const { data: messagesDataQuery } = useGetMessagesQuery<IRoomPageParams>(roomId);
+
+    
+    useCreateMessageMutation
+
     useEffect(() => {
-        const newSocket = io('http://localhost:8080');
+        socket?.on("message", (data: IMessage) => {
+
+
+            // setMessages((prevData) => [ ...prevData, data ]);
+        });
+        return () => {
+            socket?.off("message");
+        };
+    }, [socket])
+
+
+    useEffect(() => {
+        const newSocket = createSocket();
         setSocket(newSocket);
 
         if (roomId && newSocket) {
-            console.log("joinRoom", roomId);
             newSocket.emit('joinRoom', roomId);
         }
 
@@ -38,52 +61,16 @@ const RoomPage = () => {
         };
     }, [roomId]);
 
-    useEffect(() => {
-        setMessages([])
-        inputRef.current.focus();
-    }, [roomId]);
 
-    useEffect(() => {
-        socket?.on("msg", ({ text, roomId, id }) => {
-            const message: IMessage = {
-                _id: `${id}-${Date.now()}`,
-                my: socket.id === id,
-                roomId,
-                senderId: {
-                    _id: id,
-                    avatar: "https://pixelbox.ru/wp-content/uploads/2021/05/ava-vk-animal-91.jpg",
-                    name: "Valeryi",
-                    surname: "Nikiforov",
-                    login: "valeryi_nikiforov",
-                    status: "Offline",
-                },
-                recipientId: {
-                    _id: "1",
-                    avatar: "https://pixelbox.ru/wp-content/uploads/2021/05/ava-vk-animal-91.jpg",
-                    name: "Pavel",
-                    surname: "Khrustalyov",
-                    login: "pavel_khrustalyov",
-                    status: "Online",
-                },
-                messageType: 'text',
-                isRead: true,
-                createdAt: new Date(Date.now()),
-                content: text
-            };
-            setMessages((prevData) => [ ...prevData, message ]);
-        });
-        return () => {
-            socket?.off("msg");
-        };
-    }, [socket])
+    // useEffect(() => {
+    //     setMessages([])
+    //     // if (inputRef.current) {
+    //         inputRef.current.focus();
+    //     // }
+    // }, [roomId]);
 
-    const toSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (text.trim() !== '') {
-           socket?.emit('message', { text: text.trim(), roomId });
-        }
-        setText('');
-     };
+   
+
 
     const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         setText(e.target.value);
@@ -91,27 +78,28 @@ const RoomPage = () => {
         e.target.style.height = e.target.scrollHeight + 'px';
     };
 
-    const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    const handleKeyDown = async (e: KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          if (text.trim() !== '') {
-            socket?.emit('message', { text: text.trim(), roomId });
-            setText('');
+            e.preventDefault();
+
+            if (!currentFile && !text.trim()) {
+                toast.error('Сообщение не содержит текст и/или файл');
+                return;
+            }
+
+            const formData = new FormData();
+            if (roomId) formData.append('roomId', roomId);
+            if (text) formData.append('text', text);
+            if (currentFile) formData.append('content', currentFile);
+            
             e.currentTarget.style.height = 'auto';
-          }
+            setText('');
         }
-      };
+    };
 
     const sendFile = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) {
-            if (file.type.startsWith('image')) {
-                console.log(file)
-                console.log('изображение');
-            } else {
-                console.log('file');
-            }
-        }
+        setCurrentFile(file);
     }
     
     return (
@@ -127,9 +115,9 @@ const RoomPage = () => {
                 />
             </div>
 
-            <form onSubmit={toSubmit} className={styles.controllers}>
-                <Input onChange={sendFile} type="file" />
-
+            <form className={styles.controllers} encType="multipart/form-data">
+                <Input onChange={sendFile} type="file" name='file' />
+                
                 <TextArea
                     className={styles['input-field']}
                     onFocus={() => setIsOpenEmoji(false)}
@@ -145,10 +133,6 @@ const RoomPage = () => {
                     onMouseEnter={() => setIsOpenEmoji(true)}
                 >
                     <BsFillEmojiSmileFill className={styles.smile} />
-                </Button>
-
-                <Button color='transparent'>
-                    <BsArrowRightSquareFill className={styles.submit}/>
                 </Button>
             </form>
         </div>

@@ -2,12 +2,15 @@ import Room, { IRoomSchema } from "../models/Room";
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import User from "../models/User";
+import Message, { IMessageSchema } from "../models/Message";
+import { io } from "../index";
 
 export const getRooms = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const rooms: IRoomSchema[] = await Room.find({
             participants: { $in: [req.user?._id] } 
-        });
+        })
+        .populate({ path: 'participants', select: 'name surname avatar status' })
         return res.status(200).json(rooms);
     } catch (error) {
         next(error);
@@ -19,7 +22,6 @@ export const getRoomById = async (req: Request, res: Response, next: NextFunctio
 
     try {
         const room = await Room.findById(roomId)
-        .populate('recipientId', '_id name surname avatar status')
         .populate({ path: 'participants', select: '_id name surname avatar status' });
 
         if (!room) {
@@ -55,9 +57,20 @@ export const createPrivateRoom = async (req: Request, res: Response, next: NextF
         const room = await Room.create({
             type,
             participants: [req.user?._id, recipientId],
-            recipientId,
             lastMessage
         })
+
+        await room.save();
+
+        const message = await Message.create({
+            roomId: room._id,
+            text: lastMessage,
+            messageType: "text",
+            senderId: req.user?._id,
+            content: null,
+        });
+
+        await message.save();
 
         return res.status(200).json(room);
     } catch (error) {
@@ -74,7 +87,7 @@ export const createGroupRoom = async (req: Request, res: Response, next: NextFun
             type,
             title,
             participants: [ req.user?._id ],
-            imageGroup: 'default-group.jpg',
+            imageGroup: 'default-group.png',
             lastMessage
         })
 

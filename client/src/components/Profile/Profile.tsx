@@ -24,7 +24,7 @@ const Profile = () => {
         <div className={styles.profile}>
 
             <div className={styles.data}>
-                <Avatar className={styles.avatar} size="large" src={`http://localhost:8080/${userMe?.avatar}`} />
+                <Avatar className={styles.avatar} size="large" src={`http://localhost:8080/avatars/${userMe?.avatar}`} />
                 <div className={styles.fullname}>
                     <span>{userMe?.surname}</span>
                     <span>{userMe?.name}</span>

@@ -1,7 +1,9 @@
 import { Router } from 'express';
-import { getUserbyId, getUsers, updateUser } from '../controllers/UserController';
+import { getUserbyId, getUsers, updateAvatar, updateUser } from '../controllers/UserController';
 import authMiddleware from '../middlewares/auth';
 import { check } from 'express-validator';
+import { uploadAvatar } from '../utils/multer';
+import { resizeAvatar } from '../utils/sharp';
 
 const router: Router = Router();
 
@@ -12,7 +14,14 @@ router.patch('/update', [
     check('email', 'Email обязателен для заполнения').isEmail(),
 ], authMiddleware, updateUser);
 
+router.patch('/upload', 
+    authMiddleware,
+    uploadAvatar.single('avatar'), 
+    resizeAvatar, 
+    updateAvatar
+);
 router.get('/users', authMiddleware, getUsers);
 router.get('/:userId', authMiddleware, getUserbyId);
+
 
 export default router;

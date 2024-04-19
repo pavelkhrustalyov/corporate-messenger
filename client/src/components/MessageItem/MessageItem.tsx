@@ -11,10 +11,10 @@ interface IMessageItemProps {
 }
 
 const MessageItem = ({ message, roomType }: IMessageItemProps) => {
-    const date = new Intl.DateTimeFormat('ru-RU', {
-        hour: '2-digit',
-        minute: '2-digit'
-    }).format(message.createdAt);
+    // const date = new Intl.DateTimeFormat('ru-RU', {
+    //     hour: '2-digit',
+    //     minute: '2-digit'
+    // }).format(message.createdAt);
 
     return (
         <div className={cn(styles['message-item'], {
@@ -40,7 +40,8 @@ const MessageItem = ({ message, roomType }: IMessageItemProps) => {
                     )
                 }
                 
-                <div className={styles['message-content']}>{message.content}</div>
+                {/* <div className={styles['message-content']}>{message.content}</div> */}
+                <div className={styles['message-text']}>{message.text}</div>
                 <div className={styles.date}>
                     { message.my && (
                         <span className={styles.readed}>{ message.isRead ? 
@@ -48,7 +49,7 @@ const MessageItem = ({ message, roomType }: IMessageItemProps) => {
                             <BsCheck2 className={styles['read-uncheck']} /> }
                         </span>
                     )}
-                    <span>{ date }</span>
+                    {/* <span>{ message.createdAt.toISOString() }</span> */}
                 </div>
             </div>
         </div>

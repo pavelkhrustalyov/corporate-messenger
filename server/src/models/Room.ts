@@ -5,17 +5,12 @@ export interface IRoomSchema extends Document {
     type: 'private' | 'group';
     title?: string; 
     participants: Schema.Types.ObjectId[];
-    recipientId?: string;
     lastMessage: string;
     imageGroup?: string;
 }
 
 const RoomSchema = new Schema<IRoomSchema>({
     creator: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-    },
-    recipientId: {
         type: Schema.Types.ObjectId,
         ref: "User",
     },
@@ -32,7 +27,7 @@ const RoomSchema = new Schema<IRoomSchema>({
     lastMessage: String,
     imageGroup: {
         type: String,
-        default: 'default-group.jpg'
+        default: 'default-group.png'
     },
 }, {
     timestamps: true,

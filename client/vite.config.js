@@ -8,4 +8,29 @@ const plugin_react_1 = __importDefault(require("@vitejs/plugin-react"));
 // https://vitejs.dev/config/
 exports.default = (0, vite_1.defineConfig)({
     plugins: [(0, plugin_react_1.default)()],
+    server: {
+        port: 5173,
+        proxy: {
+          '/api': {
+            target: 'http://localhost:8080',
+            changeOrigin: true,
+          },
+          '/files': {
+            target: 'http://localhost:8080',
+            changeOrigin: true,
+          },
+          '/group_avatars': {
+            target: 'http://localhost:8080',
+            changeOrigin: true,
+          },
+          '/avatars': {
+            target: 'http://localhost:8080',
+            changeOrigin: true,
+          },
+          '/message_images': {
+            target: 'http://localhost:8080',
+            changeOrigin: true,
+          },
+        },
+      }
 });

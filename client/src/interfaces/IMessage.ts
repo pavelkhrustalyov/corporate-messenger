@@ -5,10 +5,11 @@ export interface IMessage {
     _id: string;
     roomId: IRoom;
     senderId: IUser;
-    recipientId: IUser | null;
     messageType: 'text' | 'file' | 'image';
     isRead: boolean;
     createdAt: Date;
-    content: string;
+    updatedAt?: Date;
+    text?: string;
+    content?: string;
     my: boolean;
 }

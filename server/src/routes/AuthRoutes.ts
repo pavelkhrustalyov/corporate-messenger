@@ -20,7 +20,7 @@ router.post('/register', [
     check('patronymic', 'Отчество обязателно').not().isEmpty().trim(),
 ], register);
 
-router.post('/logout', logOut);
+router.get('/logout', logOut);
 
 
 export default router;

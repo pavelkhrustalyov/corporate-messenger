@@ -5,8 +5,6 @@ import styles from '../Auth.module.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLoginMutation } from '../../../store/authSlice/authApiSlice';
-// import { setCredentials } from '../../../store/authSlice/authSlice';
-// import { RootState } from '../../../store/store';
 
 import 'react-toastify/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
@@ -18,8 +16,11 @@ interface LoginForm {
     password: string;
 }
 
-const Login = () => {
+interface CustomError extends Error {
+    data?: { message: string };
+}
 
+const Login = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { user } = useSelector((state: RootState) => state.auth);
@@ -43,8 +44,14 @@ const Login = () => {
         try {
             const userData = await login({ email, password }).unwrap();
             dispatch(setCredentials(userData));
+            toast.success('Вы успешно авторизовались в системе!');
         } catch (error) {
-            toast.error('Error! is Error');
+            const customError = error as CustomError;
+            if (customError && customError.data) {
+                toast.error(customError.data.message)
+            } else {
+                toast.error('Что-то пошло не так. Пожалуйста, попробуйте снова.');
+            }
         }
     };
 

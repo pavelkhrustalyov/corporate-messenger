@@ -4,14 +4,14 @@ import bcrypt from 'bcryptjs';
 export interface IUserSchema extends Document {
     name: string;
     surname: string;
-    email: string;
     patronymic: string;
+    email: string;
     password: string;
     status: 'Online' | 'Offline';
     notifications: string[];
     isVerified: boolean;
-    avatar: string | "default.jpg";
-    role: 'user' | 'creator' | 'admin';
+    avatar: string | "default.png";
+    role: 'user' | 'admin';
     matchPassword(enteredPassword: string): Promise<boolean>;
 }
 
@@ -38,7 +38,7 @@ const UserSchema = new Schema<IUserSchema>({
     },
     avatar: {
         type: String,
-        default: "default.jpg"
+        default: "default.png"
     },
     status: {
         type: String,
@@ -56,7 +56,7 @@ const UserSchema = new Schema<IUserSchema>({
     role: {
         type: String,
         default: 'user',
-        enum: ["user", "creator", "admin"]
+        enum: ["user", "admin"]
     }
 }, {
     timestamps: true,
