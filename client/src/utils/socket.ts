@@ -1,6 +1,11 @@
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
+const user = localStorage.getItem('user');
 
 const BASE_URL = 'http://localhost:8080';
-const createSocket = () => io(BASE_URL);
+const socket = () => io(BASE_URL, {
+    query: {
+        userId: user ? JSON.parse(user) : null
+    }
+});
 
-export default createSocket;
+export default socket;

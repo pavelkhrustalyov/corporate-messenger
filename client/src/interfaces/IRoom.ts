@@ -10,4 +10,5 @@ export interface IRoom {
     participants: IUser[];
     lastMessage: string;
     createdAt: string;
+    updatedAt: string;
 }

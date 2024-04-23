@@ -1,14 +1,11 @@
 import styles from './SelectRoomType.module.css';
-import { MdMessage } from "react-icons/md";
-import { MdOutlinePeopleAlt } from "react-icons/md";
-import { MdVideoChat } from "react-icons/md";
+import Input from '../UI/Input/Input';
 
 const SelectRoomType = () => {
     return (
         <div className={styles['room-type']}>
-            <MdMessage className={styles['room-type__icon']}/>
-            <MdOutlinePeopleAlt className={styles['room-type__icon']} />
-            <MdVideoChat className={styles['room-type__icon']} />
+            <img className={styles.icon} src="search.svg" alt="Поиск" />
+            <Input type="search" className={styles['search__input']} placeholder='Поиск сообщений' />
         </div>
     );
 }

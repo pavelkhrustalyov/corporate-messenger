@@ -9,7 +9,6 @@ export const getMessages = async (req: Request, res: Response, next: NextFunctio
     const { roomId } = req.params;
 
     try {
-
         const room: IRoomSchema | null = await Room.findOne({ _id: roomId });
 
         if (!room) {
@@ -18,8 +17,8 @@ export const getMessages = async (req: Request, res: Response, next: NextFunctio
         }
 
         const messages: IMessageSchema[] = await Message.find({ roomId })
-            .populate({ path: 'senderId', select: 'name surname avatar status' });
-
+            .populate({ path: 'senderId', select: 'name surname avatar status' })
+            
         return res.status(200).json(messages);
     } catch (error) {
         next(error);
@@ -47,7 +46,7 @@ export const createMessage = async (req: Request, res: Response, next: NextFunct
     }
 
     try {
-        if (typeMessage === 'text' && !text.trim().length) {
+        if (typeMessage === 'text' && !text.trim()) {
             res.status(400);
             throw new Error('Сообщение не может быть пустым');
         }
@@ -66,7 +65,7 @@ export const createMessage = async (req: Request, res: Response, next: NextFunct
 
         const message: IMessageSchema = await Message.create({
             roomId,
-            text: text.trim(),
+            text: text ? text.trim() : '',
             messageType: typeMessage,
             senderId: req.user?._id,
             content: req.file ? req.file.filename : null
@@ -78,14 +77,18 @@ export const createMessage = async (req: Request, res: Response, next: NextFunct
             $set: { lastMessage }
         });
 
-        await message.save();
-
         await message.populate(
             { path: 'senderId', select: 'name surname avatar status' }
         );
 
-        io.emit('message', message);
+        const updatedRoom = await Room.findById(room._id)
+        await updatedRoom?.populate({ path: 'participants', select: 'name surname avatar status' })
 
+        await message.save();
+        
+        io.to(roomId).emit('message', message);
+        io.emit('update-room', { room: updatedRoom });
+        
         return res.status(201).json(message);
         
     } catch (error) {

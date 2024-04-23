@@ -1,44 +1,12 @@
 .room-page {
     position: relative;
     display: flex;
+    padding-bottom: 20px;
     flex-direction: column;
     flex: 1;
+    border-radius: 10px;
+    -webkit-box-shadow: 0px -1px 8px 0px rgb(195,227,247);
+    -moz-box-shadow: 0px -1px 8px 0px rgb(195,227,247);
+    box-shadow: 0px -1px 8px 0px rgb(195,227,247);
     background-color: var(--bg-support-color);
-}
-
-.controllers {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 5px;
-    margin-top: auto;
-    background-color: var(--bg-main-color);
-    border-top: 1px solid var(--separate-color);
-}
-
-.submit {
-    font-size: 30px;
-    color: var(--icon-color);
-}
-
-.smile {
-    color: var(--icon-color);
-}
-
-.picker {
-    position: absolute;
-    bottom: 66px;
-    right: 0;
-}
-
-.input-field {
-    padding-top: 10px;
-    width: 100%;
-    font-size: 18px;
-    border: none;
-    resize: none;
-}
-
-.dropzone {
-    color: var(--text-main-color);
 }

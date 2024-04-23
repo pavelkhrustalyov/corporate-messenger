@@ -1,29 +1,45 @@
 .message-item {
+   position: relative;
    display: flex;
+   margin-bottom: 50px;
    justify-content: center;
-   align-items: flex-end;
 }
 
 .message-data {
-    position: relative;
     display: flex;
     flex-direction: column;
     padding: 10px 10px 3px 10px;
-    color: var(--text-main-color);
+    color: var(--text-dark-color);
     background: var(--message-recipient-color);
-    min-width: 80px;
     max-width: 500px;
-    margin-bottom: 5px;
-    border-radius: 3px;
+    border-radius: 10px 10px 10px 0px;
     word-wrap: break-word;
 }
 
+.message-item.type-image .message-data {
+    background-color: transparent !important;
+    color: var(--text-dark-color) !important;
+}
+
+.message-item.type-image .message-data .image {
+   border-radius: 10px;
+}
+
 .message-item.my {
+    padding-right: 30px;
     margin-left: auto;
 }
 
+
 .message-item.my .message-data {
-    background: var(--message-self-color);
+    padding-right: 10px;
+    background: var(--bg-main-color);
+    color: var(--text-light-color);
+    border-radius: 10px 10px 0px 10px;
+}
+
+.message-item.my .file {
+    color: var(--text-light-color);
 }
 
 .avatar {
@@ -43,19 +59,36 @@
 }
 
 .date {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: auto;
+    position: absolute;
+    bottom: -25px;
+    right: 10px;
     font-size: 12px;
     color: var(--date-color);
 }
 
 .readed  {
     position: absolute;
-    bottom: -5px;
-    right: 45px;
+    bottom: -9px;
+    right: 33px;
     font-size: 20px;
-    color: var(--text-main-color);
+    color: var(--date-color);
+}
+
+.image {
+    height: 100%;
+    width: 100%;
+}
+
+.file {
+    margin-bottom: 10px;
+    color: var(--text-support-color);
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon {
+    font-size: 30px;
 }
 

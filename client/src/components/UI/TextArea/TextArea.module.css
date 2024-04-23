@@ -1,11 +1,12 @@
 .textarea {
-    background-color: var(--bg-main-color);
-    color: var(--text-main-color);
+    resize: none;
+    background-color: var(--bg-base-color);
+    color: var(--text-support-color);
     outline: none;
 }
 
 .textarea::placeholder {
     vertical-align: bottom;
     font-size: 17px;
-    color: var(--placeholder-color);
+    color: var(--text-support-color);
 }

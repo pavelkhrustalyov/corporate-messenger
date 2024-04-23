@@ -19,7 +19,9 @@ const isLegalFormatFiles = (file: Express.Multer.File): boolean => {
     file.mimetype === 'application/pdf' ||
     file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
     file.mimetype === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' || 
-    file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+    file.mimetype === 'application/zip' ||
+    file.mimetype === 'application/rar'
 };
 
 const isLegalFormatsMessage = (file: Express.Multer.File): boolean => {

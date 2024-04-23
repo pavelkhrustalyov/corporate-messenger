@@ -7,10 +7,8 @@ const ChatLayout = () => {
     return (
         <div className={styles['chat-layout']}>
             <Navigation />
-            <div className={styles['chat-container']}>
-                <Sidebar />
-                <Outlet />
-            </div>
+            <Sidebar />
+            <Outlet />
         </div>
     );
 }

@@ -38,7 +38,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             surname,
             patronymic,
             email,
-            avatar: 'avatars/default.jpeg',
+            avatar: 'default.png',
             password: cryptPassword
         });
     

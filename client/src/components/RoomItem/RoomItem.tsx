@@ -13,12 +13,14 @@ interface IRoomItemProps {
 const RoomItem = ({ room }: IRoomItemProps) => {
     const { user } = useSelector((state: RootState) => state.auth);
 
-    const transformDate = new Intl.DateTimeFormat('ru-RU', {
-        day: '2-digit',
-        month: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-    }).format(new Date(room.createdAt));
+    const transformDate = (date: string) => {
+        return new Intl.DateTimeFormat('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(new Date(date));
+    }
 
     const messageSlice = (msg: string, cupChars: number): string => {
         return msg.length > cupChars ? `${msg.slice(0, cupChars)}...` : msg;
@@ -55,7 +57,11 @@ const RoomItem = ({ room }: IRoomItemProps) => {
                     )}
                 </div>
                 <div className={styles['room-item__message']}>{messageSlice(room.lastMessage, 25)}</div>
-                <div className={styles['room-item__date']}>{transformDate}</div>
+                <div className={styles['room-item__date']}>
+                    { room.updatedAt ?
+                    transformDate(room.updatedAt) : 
+                    (room.createdAt) }
+                </div>
             </div>
 
         </NavLink>

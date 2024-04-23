@@ -8,21 +8,21 @@ const Input = forwardRef<HTMLInputElement, IInputProps>(({ className, ...props }
         <>
             {
                 props.type === 'file' ? (
-                    <div className="file-container">
+                    <div className={styles['file-container']}>
                         <input 
                             id='file'
-                            className={cn(className, styles['input-file'], {})} 
+                            className={cn(styles['input-file'], className, {})} 
                             ref={ref}
                             {...props}
                         />
                         <label htmlFor="file">
-                            <MdAttachFile className={styles.file} />
+                            <img className={styles.file} src="file.svg" alt="Smile" />
                         </label>
                     </div>
                 ) : (
                     <input
                         ref={ref}
-                        className={cn(className, styles.input, {})}
+                        className={cn(styles.input, className, {})}
                         {...props}
                     />
                 )

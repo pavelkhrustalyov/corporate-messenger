@@ -1,0 +1,65 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    /* position: relative;
+    display: flex;
+    margin-top: 5px;
+    margin-top: auto;
+    border-radius: 10px; */
+}
+
+.typing {
+    color: var(--text-support-color);
+    font-weight: 300;
+    padding-left: 21px;
+}
+
+.form-controls {
+    position: relative;
+    display: flex;
+    padding-right: 15px;
+    margin-top: 5px;
+    margin-top: auto;
+    border-radius: 10px;
+}
+
+.micro {
+    width: 25px;
+    height: 25px;
+}
+
+.submit {
+    font-size: 30px;
+}
+
+.smile {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    left: 27px;
+    top: 13px;
+}
+
+.file {
+    position: absolute;
+    top: 0px;
+    right: 55px;
+    margin-right: 20px;
+}
+
+.picker {
+    position: absolute;
+    bottom: 66px;
+}
+
+.input-field {
+    padding: 15px 15px 15px 45px;
+    margin-right: 15px;
+    width: 100%;
+    font-size: 18px;
+    border: none;
+    resize: none;
+    border-radius: 10px;
+    background-color: var(--bg-base-color);
+    caret-color: var(--text-support-color);
+}

@@ -1,5 +1,7 @@
 .chat-layout {
-    /* width: 1200px; */
+    padding: 15px;
+    display: flex;
+    gap: 25px;
     margin: 0 auto;
 }
 

@@ -3,7 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { authSlice } from './authSlice/authSlice';
 import { userSlice } from './userSlice/userSlice';
 import { apiSlice } from './apiSlice';
-import { roomSlice } from './roomSLice/roomSlice';
+import { roomSlice } from './roomSlice/roomSlice';
 import { messageSlice } from './messageSlice/messageSlice';
 
 // Создаем Redux store

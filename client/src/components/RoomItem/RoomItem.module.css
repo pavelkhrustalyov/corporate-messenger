@@ -1,34 +1,30 @@
 .room-item {
     position: relative;
     display: flex;
-    text-decoration: none;
     padding: 10px;
-    background-color: var(--bg-main-color);
-    color: var(--text-main-color);
+    color: var(--text-dark-color);
     transition: hover 0.2s all;
-    border-bottom: 1px solid var(--separate-color);
     cursor: pointer;
+    text-decoration: none;
+    border-bottom: 1px solid var(--separate-color);
 }
 
 .room-item:last-child {
-    border-bottom: none;
+    /* border-bottom: none; */
 }
 
 .room-item.active {
-    background-color: var(--ui-main-color);
+    border-right: 5px solid var(--active-border);
 }
 
 .room-item.active .room-item__message {
-    color: var(--text-main-color);
+    color: var(--text-dark-color);
 }
 
 .room-item.active .room-item__date {
-    color: var(--text-main-color);
+    right: 5px;
+    color: var(--text-dark-color);
 }
-
-/* .room-item:hover {
-    background-color: #1e2a35;
-} */
 
 .room-item__data {
     display: flex;
@@ -44,17 +40,18 @@
 }
 
 .room-item__message {
+    font-size: 14px;
     color: var(--placeholder-color);
 }
 
 .room-item__date {
     position: absolute;
     bottom: 0;
-    right: 5px;
+    right: 10px;
     margin-left: auto;
     margin-top: 5px;
     font-size: 12px;
-    color: var(--date-color);
+    color: var(--placeholder-color);
 }
 
 .status {

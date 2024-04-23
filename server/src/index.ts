@@ -1,9 +1,8 @@
-import express, { urlencoded } from 'express';
+import express, { json, urlencoded } from 'express';
 import http from 'http';
 import { Server, Socket } from 'socket.io';
 import { dbConnect } from './database/connect';
 
-import socketRoutes from './routes/SocketRoutes';
 import dotenv from 'dotenv';
 import { join, resolve } from 'path';
 import cookieParser from 'cookie-parser';
@@ -15,6 +14,7 @@ import roomRoutes from './routes/RoomRoutes';
 import messagesRoutes from './routes/MessageRoutes';
 
 import { errorHandler, notFound } from './middlewares/errorModdleware';
+import User, { IUserSchema } from './models/User';
 
 const app = express();
 const server = http.createServer(app);
@@ -24,19 +24,14 @@ dotenv.config({ path: join(__dirname, 'config/.env')});
 export const io = new Server(server, {
     cors: {
       origin: process.env.CLIENT_URL,
-      methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: true
     }
-});
-app.use((_req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL || "http://localhost:5173");
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  next();
 });
 
 dbConnect();
-app.use(express.json());
+app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
 
@@ -60,9 +55,28 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // socket routes
-io.on('connection', (socket: Socket) => {
-  socket.on("joinRoom", (roomId) => {
+io.on('connection', async (socket: Socket) => {
+  // const { userId } = socket.handshake.query;
+  // const user: IUserSchema | null = await User.findByIdAndUpdate(userId, {
+  //   $set: { status: "Online" }
+  // });
+
+  socket.on("join-room", (roomId) => {
     socket.join(roomId);
+  })
+
+  type typingData = { isTyping: boolean, roomId: string, name: string };
+
+  socket.on("typing", (data: typingData) => {
+    socket.broadcast.to(data.roomId).emit("set-typing", data)
+  })
+
+  // socket.on("disconnect", async () => {
+  //   await user?.updateOne({ $set: { status: "Offline" } })
+  // })
+
+  socket.on("disconnect", () => {
+    
   })
 });
 
