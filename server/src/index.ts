@@ -54,29 +54,45 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
+type typingData = { isTyping: boolean, roomId: string, name: string };
+
+interface Sockets {
+  [socketId: string]: string;
+}
+
+// const sockets: Sockets = {};
+
 // socket routes
 io.on('connection', async (socket: Socket) => {
-  // const { userId } = socket.handshake.query;
-  // const user: IUserSchema | null = await User.findByIdAndUpdate(userId, {
-  //   $set: { status: "Online" }
-  // });
-
+  
   socket.on("join-room", (roomId) => {
     socket.join(roomId);
   })
 
-  type typingData = { isTyping: boolean, roomId: string, name: string };
+  socket.on('user-online', async (data) => {
+    await User.findByIdAndUpdate(data.userId, {
+      $set: { status: "Online" }
+    });
+    io.emit("online", data.userId);
+  });
 
-  socket.on("typing", (data: typingData) => {
-    socket.broadcast.to(data.roomId).emit("set-typing", data)
+  socket.on('user-offline', async (data) => {
+    await User.findByIdAndUpdate(data.userId, {
+      $set: { status: "Offline", last_seen: Date.now() }
+    });
+
+    io.emit("offline", data.userId);
+  });
+
+  socket.on("leave-room", (roomId) => {
+    socket.leave(roomId);
   })
 
-  // socket.on("disconnect", async () => {
-  //   await user?.updateOne({ $set: { status: "Offline" } })
-  // })
+  socket.on("typing", (data: typingData) => {
+    socket.to(data.roomId).emit("set-typing", data)
+  })
 
   socket.on("disconnect", () => {
-    
   })
 });
 
@@ -87,3 +103,27 @@ app.use(errorHandler);
 server.listen(process.env.PORT, () => {
     console.log(`listening on ${process.env.PORT}`);
 });
+
+ // if (userId) {
+  //   socket.join(userId);
+  // }
+
+  // socket.on('connect-user', async (userId: string) => {
+  //   const user: IUserSchema | null = await User.findByIdAndUpdate(userId, {
+  //     $set: { status: "Online" }
+  //   });
+  // })
+
+  // socket.on('connect-user', async (userId: string) => {
+  //   console.log('connect')
+  //   const user: IUserSchema | null = await User.findByIdAndUpdate(userId, {
+  //     $set: { status: "Online" }
+  //   });
+  // })
+
+  // socket.on('disconnect-user', async (userId: string) => {
+  //   console.log('disconnect')
+  //   const user: IUserSchema | null = await User.findByIdAndUpdate(userId, {
+  //     $set: { status: "Offline" }
+  //   });
+  // })

@@ -12,31 +12,15 @@ import Loader from '../Loader/Loader';
 // import createSocket from '../../utils/socket';
 
 const RoomList = () => {
-
-    // const [socket, setSocket] = useState<Socket | null>(null);
-
-    // useEffect(() => {
-    //     const newSocket = createSocket();
-    //     setSocket(newSocket);
-
-    //     newSocket.on('room-message', (message) => {
-    //         console.log(message)
-    //     })
-
-    //     return () => {
-    //         newSocket.disconnect();
-    //     };
-    // }, []);
-
     const { data: roomData, isLoading, isError } = useGetRoomsQuery();
     const { roomList } = useSelector((state: RootState) => state.rooms);
-    const [currentTab, setCurrentTab] = useState<string>("");
+    const [currentTab, setCurrentTab] = useState<string>("all");
     const dispatch = useDispatch();
 
     const tabs = [
-        { name: "", text: "Все" },
-        { name: "group", text: "Приватные" },
-        { name: "private", text: "Общие" }
+        { name: "all", text: "Все" },
+        { name: "private", text: "Приватные" },
+        { name: "group", text: "Общие" }
     ]
 
     useEffect(() => {
@@ -45,7 +29,12 @@ const RoomList = () => {
         }
     }, [dispatch, roomData]);
 
-    const filteredRooms = roomList.filter(room => room.type !== currentTab);
+    const filteredRooms = roomList.filter(room => {
+        if (currentTab === "all") {
+            return true;
+        }
+        return room.type === currentTab;
+    });
 
     return (
         <div className={styles['room-list']}>

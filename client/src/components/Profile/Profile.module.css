@@ -1,12 +1,40 @@
+.profile {
+    color: var(--text-support-color);
+}
+
+.title {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
 .fullname {
     display: flex;
-    flex-direction: column;
-    font-size: 20px;
+    font-size: 18px;
+    align-items: center;
+    font-weight: bold;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    font-weight: 300;
+}
+
+.status span {
+    margin-right: 5px;
+}
+
+.content {
+    display: flex;
+    align-items: center;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--separate-color);
 }
 
 .data {
     display: flex;
-    margin-bottom: 20px;
+    flex-direction: column;
 }
 
 .avatar {
@@ -15,4 +43,43 @@
 
 .profile-icon {
     font-size: 30px;
+}
+
+.info-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--separate-color);
+    padding-bottom: 20px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    align-items: center;
+}
+
+.info-title {
+    display: flex;
+    align-items: center;
+}
+
+.position {
+    margin-left: 5px;
+}
+
+.controls {
+    padding-top: 20px;
+    display: flex;
+}
+
+.controls button {
+   margin-right: 10px;
+   display: flex;
+   align-items: center;
+}
+
+.controls button span {
+    margin-left: 5px;
 }

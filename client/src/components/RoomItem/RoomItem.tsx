@@ -5,6 +5,7 @@ import { IRoom } from '../../interfaces/IRoom';
 import Avatar from '../Avatar/Avatar';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
+import { getFullDate } from '../../utils/convertDate';
 
 interface IRoomItemProps {
     room: IRoom
@@ -13,25 +14,14 @@ interface IRoomItemProps {
 const RoomItem = ({ room }: IRoomItemProps) => {
     const { user } = useSelector((state: RootState) => state.auth);
 
-    const transformDate = (date: string) => {
-        return new Intl.DateTimeFormat('ru-RU', {
-            day: '2-digit',
-            month: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        }).format(new Date(date));
-    }
-
     const messageSlice = (msg: string, cupChars: number): string => {
         return msg.length > cupChars ? `${msg.slice(0, cupChars)}...` : msg;
     };
 
-    const [ interlocutor ] = room.type === 'private' ? 
-        room.participants.filter(p => p._id !== user?._id)
-        : room.participants;
+    const interlocutor = room.participants.find(p => p._id !== user?._id)
 
     const getFullName = (): string => {
-        return `${interlocutor.name} ${interlocutor.surname}`;
+        return `${interlocutor?.name} ${interlocutor?.surname}`;
     };
 
     return (
@@ -41,7 +31,7 @@ const RoomItem = ({ room }: IRoomItemProps) => {
         >   
             { room.type === 'group' ?  
                 <Avatar src={`/group_avatars/${room.imageGroup}`} size='middle' alt={room.title}/>
-                : <Avatar src={`/avatars/${interlocutor.avatar}`} size='middle' alt={interlocutor.name}/>
+                : <Avatar src={`/avatars/${interlocutor?.avatar}`} size='middle' alt={interlocutor?.name}/>
             }
             
             <div className={styles['room-item__data']}>
@@ -52,14 +42,14 @@ const RoomItem = ({ room }: IRoomItemProps) => {
                     </div>
                     { room.type !== 'group' && (
                         <div className={cn(styles['status'], {
-                            [styles['status-online']]: interlocutor.status === 'Online'
+                            [styles['status-online']]: interlocutor?.status === 'Online'
                         })}></div>
                     )}
                 </div>
-                <div className={styles['room-item__message']}>{messageSlice(room.lastMessage, 25)}</div>
+                <div className={styles['room-item__message']}>{ messageSlice(room.lastMessage, 25)}</div>
                 <div className={styles['room-item__date']}>
                     { room.updatedAt ?
-                    transformDate(room.updatedAt) : 
+                    getFullDate(room.updatedAt) : 
                     (room.createdAt) }
                 </div>
             </div>

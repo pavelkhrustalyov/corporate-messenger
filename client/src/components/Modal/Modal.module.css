@@ -10,10 +10,13 @@
 
 .modal-content {
     position: absolute;
+    padding: 20px;
+    min-width: 300px;
     top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: rgba(24, 33, 44, 1);
-    padding: 10px;
+    background-color: var(--bg-support-color);
+    color: var(--text-support-color);
+    border-radius: 10px;
     z-index: 10;
 }

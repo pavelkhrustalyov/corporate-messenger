@@ -1,12 +1,13 @@
 .room-header {
-    margin: 0;
+    margin: 0 auto;
     display: flex;
     align-items: center;
-    padding: 11px;
+    width: 95%;
+    padding: 10px;
+    border-bottom: 1px solid var(--separate-color);
     background-color: var(--bg-support-color);
     color: var(--text-main-color);
     transition: 0.2s all;
-    border-bottom: 1px solid var(--separate-color);
     border-radius: 10px 10px 0px 0px;
 }
 
@@ -60,4 +61,8 @@
     color: var(--icon-color);
     font-size: 25px;
     cursor: pointer;
+}
+
+.icon {
+    color: var(--bg-main-color);
 }

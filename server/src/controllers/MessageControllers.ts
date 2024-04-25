@@ -7,6 +7,7 @@ import { Request, Response, NextFunction } from 'express';
 
 export const getMessages = async (req: Request, res: Response, next: NextFunction) => {
     const { roomId } = req.params;
+    const { limit } = req.query;
 
     try {
         const room: IRoomSchema | null = await Room.findOne({ _id: roomId });
@@ -16,8 +17,10 @@ export const getMessages = async (req: Request, res: Response, next: NextFunctio
             throw new Error("Комната не найдена");
         }
 
-        const messages: IMessageSchema[] = await Message.find({ roomId })
+        const messages: IMessageSchema[] = (await Message.find({ roomId })
             .populate({ path: 'senderId', select: 'name surname avatar status' })
+            .sort({ createdAt: -1 })
+            .limit(Number(limit))).reverse();
             
         return res.status(200).json(messages);
     } catch (error) {
@@ -68,7 +71,10 @@ export const createMessage = async (req: Request, res: Response, next: NextFunct
             text: text ? text.trim() : '',
             messageType: typeMessage,
             senderId: req.user?._id,
-            content: req.file ? req.file.filename : null
+            content: req.file ? { 
+                filename: req.file.filename, 
+                size: req.file.size
+            } : null
         });
 
         const lastMessage = req.file ? req.file.filename : text;
@@ -78,11 +84,11 @@ export const createMessage = async (req: Request, res: Response, next: NextFunct
         });
 
         await message.populate(
-            { path: 'senderId', select: 'name surname avatar status' }
+            { path: 'senderId', select: 'name surname avatar status last_seen' }
         );
 
         const updatedRoom = await Room.findById(room._id)
-        await updatedRoom?.populate({ path: 'participants', select: 'name surname avatar status' })
+        await updatedRoom?.populate({ path: 'participants', select: 'name surname avatar status last_seen' })
 
         await message.save();
         

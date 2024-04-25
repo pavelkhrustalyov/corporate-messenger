@@ -1,12 +1,16 @@
-import { memo } from 'react';
+import { HtmlHTMLAttributes, forwardRef, memo } from 'react';
 import { IMessage } from '../../interfaces/IMessage';
 import MessageItem from '../MessageItem/MessageItem';
 import styles from './MessageList.module.css';
 import Loader from '../Loader/Loader';
 
-const MessageList = ({ messages, isLoading }: { messages: IMessage[], isLoading: boolean}) => {
+interface IPropsMessageList {
+    messages: IMessage[], isLoading: boolean
+}
+
+const MessageList = forwardRef<HTMLDivElement, IPropsMessageList>(({ messages, isLoading }, ref) => {
     return (
-        <div className={styles['message-list']}>
+        <div ref={ref} className={styles['message-list']}>
              { isLoading ? <Loader className={styles.loader} /> :
                  messages.map(message => {
                     return (
@@ -20,6 +24,6 @@ const MessageList = ({ messages, isLoading }: { messages: IMessage[], isLoading:
             }
         </div>
     )
-};
+});
 
 export default memo(MessageList);

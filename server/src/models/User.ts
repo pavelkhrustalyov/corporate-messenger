@@ -12,6 +12,7 @@ export interface IUserSchema extends Document {
     isVerified: boolean;
     avatar: string | "default.png";
     role: 'user' | 'admin';
+    last_seen: Date;
     matchPassword(enteredPassword: string): Promise<boolean>;
 }
 
@@ -29,7 +30,7 @@ const UserSchema = new Schema<IUserSchema>({
         required: true
     },
     email: {
-        type: "String",
+        type: String,
         required: true
     },
     password: {
@@ -52,6 +53,10 @@ const UserSchema = new Schema<IUserSchema>({
     isVerified: {
         type: Boolean,
         default: false
+    },
+    last_seen: {
+        type: Date,
+        default: Date.now
     },
     role: {
         type: String,

@@ -4,9 +4,11 @@ import styles from './MessageItem.module.css';
 import cn from 'classnames';
 import Avatar from '../Avatar/Avatar';
 import { BsCheck2All, BsCheck2 } from "react-icons/bs";
-import { MdAttachFile } from 'react-icons/md';
+import { FaFile } from "react-icons/fa6";
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
+import { convertBytes } from '../../utils/convertBytes';
+import { getTime } from '../../utils/convertDate';
 
 interface IMessageItemProps {
     message: IMessage,
@@ -15,14 +17,6 @@ interface IMessageItemProps {
 
 const MessageItem = ({ message, roomType }: IMessageItemProps) => {
     const { user } = useSelector((state: RootState) => state.auth);
-    const lastMessageRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        if (lastMessageRef.current) {
-            const message = lastMessageRef.current as HTMLElement;
-            message.scrollIntoView({ behavior: 'smooth', block: "end" })
-        }
-    }, [lastMessageRef]);
 
     useEffect(() => {
         const downloadLink = document.getElementById('downloadLink');
@@ -30,22 +24,17 @@ const MessageItem = ({ message, roomType }: IMessageItemProps) => {
             downloadLink.addEventListener('click', function(event: any) {
                 event.preventDefault();
                 const link = event.currentTarget;
-                const filePath = `/files/${message.content}`;
+                const filePath = `/files/${message.content?.filename}`;
                 link.href = filePath;
                 window.open(filePath, '_blank');
             });
         }
     }, [])
 
-    const date = new Intl.DateTimeFormat('ru-RU', {
-        hour: '2-digit',
-        minute: '2-digit'
-    }).format(new Date(message.createdAt));
-
     const isMyMessage = message.senderId._id === user?._id;
 
     return (
-        <div ref={lastMessageRef} className={cn(styles['message-item'], {
+        <div className={cn(styles['message-item'], {
             [styles['my']]: isMyMessage,
             [styles['type-image']]: message.messageType === 'image'
         })}>
@@ -70,7 +59,7 @@ const MessageItem = ({ message, roomType }: IMessageItemProps) => {
                 }
                 {
                     message.messageType === "image" && (
-                        <img className={styles.image} src={`/message_images/${message.content}`} alt="Изображение сообщения" />
+                        <img className={styles.image} src={`/message_images/${message.content?.filename}`} alt="Изображение сообщения" />
                     )
                 }
 
@@ -78,17 +67,20 @@ const MessageItem = ({ message, roomType }: IMessageItemProps) => {
                   message.messageType === "file" && (
                     <a 
                         id="downloadLink"
-                        href={`/files/${message.content}`}
-                        download={`/files/${message.content}`}
+                        href={`/files/${message.content?.filename}`}
+                        download={`/files/${message.content?.filename}`}
                         className={styles.file}
                     >
-                       <MdAttachFile className={styles.icon} /> Вложение 
+                       <FaFile className={styles.icon} />
+                       <span className={styles['file-text']}>
+                            Файл: скачать
+                       </span>
+                       <div className={styles.size}>{convertBytes(Number(message.content?.size))}mb</div>
                     </a>
                 )
                 }
                 <div className={styles['message-text']}>{message.text}</div>
 
-              
                 </div>
                 <div className={styles.date}>
                     { isMyMessage && (
@@ -97,7 +89,7 @@ const MessageItem = ({ message, roomType }: IMessageItemProps) => {
                             <BsCheck2 className={styles['read-uncheck']} /> }
                         </span>
                     )}
-                <span>{ date }</span>
+                <span>{ getTime(message.createdAt.toString()) }</span>
             </div>
         </div>
     )

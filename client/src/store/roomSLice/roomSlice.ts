@@ -18,7 +18,7 @@ const initialState: IInitialState = {
 }
 
 export const getRoomById = createAsyncThunk(
-    'messages/getRoomById',
+    'rooms/getRoomById',
     async (roomId: string) => {
         try {
             const responce = await axios.get<IRoom>(`/api/room/${roomId}`);
@@ -30,6 +30,14 @@ export const getRoomById = createAsyncThunk(
         }
     },
 )
+interface IStatusPayload {
+    payload: {
+        userId: string;
+        roomId?: string;
+        status: "Online" | "Offline";
+        last_seen: number
+    }
+}
 
 export const roomSlice = createSlice({
     name: 'room',
@@ -45,7 +53,34 @@ export const roomSlice = createSlice({
                 }
                 return room;
             })
-        }
+        },
+        updateStatusInRoom: (state, { payload }: IStatusPayload) => {
+            if (state.room && state.room._id === payload.roomId) {
+                state.room = {
+                    ...state.room,
+                    participants: state.room.participants.map(p => {
+                        if (p._id === payload.userId) {
+                            return { ...p, 
+                                status: payload.status, 
+                                last_seen: payload.last_seen 
+                            };
+                        } else {
+                            return p;
+                        }
+                    })
+                };
+            }
+        },
+        updateStatusInRooms: (state, { payload }: IStatusPayload) => {
+            state.roomList = state.roomList.map(room => {
+                return { ...room, participants: room.participants.map(p => {
+                    if (p._id == payload.userId) {
+                        return {...p, status: payload.status}
+                    }
+                    return p;
+                })}
+            })
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(getRoomById.pending, (state) =>   {
@@ -69,4 +104,4 @@ export const roomSlice = createSlice({
 })
 
 export default roomSlice.reducer;
-export const { getRooms, updateRoom } = roomSlice.actions;
+export const { getRooms, updateRoom, updateStatusInRooms, updateStatusInRoom } = roomSlice.actions;

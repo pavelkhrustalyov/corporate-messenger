@@ -1,11 +1,16 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+export interface IContent {
+    filename: string;
+    size: string;
+}
+
 export interface IMessageSchema extends Document {
     roomId: Schema.Types.ObjectId;
     senderId: Schema.Types.ObjectId;
     messageType: 'text' | 'file' | 'image';
     isRead: boolean;
-    content?: string;
+    content?: IContent;
     text?: string;
 }
 
@@ -28,7 +33,10 @@ const MessageSchema = new Schema<IMessageSchema>({
         default: false
     },
     content: {
-        type: String,
+        type: {
+            filename: String,
+            size: String
+        },
         default: null
     },
     text: {

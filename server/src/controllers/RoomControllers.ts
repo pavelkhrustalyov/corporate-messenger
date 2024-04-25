@@ -10,7 +10,7 @@ export const getRooms = async (req: Request, res: Response, next: NextFunction) 
         const rooms: IRoomSchema[] = await Room.find({
             participants: { $in: [req.user?._id] } 
         })
-        .populate({ path: 'participants', select: 'name surname avatar status' })
+        .populate({ path: 'participants', select: 'name surname avatar status last_seen' })
         return res.status(200).json(rooms);
     } catch (error) {
         next(error);
@@ -22,7 +22,7 @@ export const getRoomById = async (req: Request, res: Response, next: NextFunctio
 
     try {
         const room = await Room.findById(roomId)
-        .populate({ path: 'participants', select: '_id name surname avatar status' });
+        .populate({ path: 'participants', select: '_id name surname avatar status last_seen' });
 
         if (!room) {
             res.status(404);

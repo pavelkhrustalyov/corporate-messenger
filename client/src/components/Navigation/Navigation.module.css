@@ -29,11 +29,15 @@
     margin-bottom: 20px;
 }
 
-.link {
-    display: block;
+.button-nav {
     padding: 5px;
-    margin-bottom: 37px;
+    margin-bottom: 30px;
     border: 5px solid transparent;
+    transition: 0.2s linear all;
+}
+
+.button-nav:active {
+    transform: translateY(2px);
 }
 
 .navigation button:last-child {
@@ -61,7 +65,7 @@
 }
 
 .icon {
-    font-size: 38px;
+    font-size: 40px;
     color: var(--text-main-color);
 }
 

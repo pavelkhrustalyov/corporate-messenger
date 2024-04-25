@@ -16,9 +16,9 @@ const initialState: IInitialState = {
 
 export const getMessages = createAsyncThunk(
     'messages/getMessageByRoomId',
-    async (roomId: string) => {
+    async (data: { roomId: string, limit: number }) => {
         try {
-            const responce = await axios.get<IMessage[]>(`/api/messages/${roomId}`);
+            const responce = await axios.get<IMessage[]>(`/api/messages/${data.roomId}?&limit=${data.limit}`);
             return responce.data;
         } catch (error) {
             if (error instanceof AxiosError) {

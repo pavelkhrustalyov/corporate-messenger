@@ -43,6 +43,7 @@ body {
     --offline-color: tomato;
     --text-light-color: #fff;
     --active-border: #F3B559;
+    --button-hover: #3e3ebc;
     --active-tab: #612DD1;
     --text-dark-color: black;
     --text-support-color: #303030;
@@ -54,7 +55,7 @@ body {
     --separate-color: #dbd2d2;
     --form-wrap-color: #575f71;
     --placeholder-color: #999;
-    --link-color: rgb(62, 62, 188);
+    --link-color: #3e3ebc;
     --status-border-color: white;
     --box-shadow: rgb(195,227,247);
 }

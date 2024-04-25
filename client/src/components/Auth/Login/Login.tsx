@@ -10,6 +10,7 @@ import 'react-toastify/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 import { setCredentials } from '../../../store/authSlice/authSlice';
 import { RootState } from '../../../store/store';
+import socket from '../../../utils/testSocket';
 
 interface LoginForm {
     email: string;
@@ -28,6 +29,7 @@ const Login = () => {
 
     useEffect(() => {
         if (user) {
+            socket.emit("user-online", { userId: user._id });
             navigate('/');
         }
     }, [navigate, user])

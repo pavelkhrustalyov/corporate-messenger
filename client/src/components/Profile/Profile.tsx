@@ -6,14 +6,25 @@ import { AppDispatch, RootState } from '../../store/store';
 // import { getUserById } from '../../store/userSlice/userSlice';
 import Avatar from '../Avatar/Avatar';
 import Button from '../UI/Button/Button';
-import { MdMessage } from 'react-icons/md';
-import { useLoadUserQuery } from '../../store/authSlice/authApiSlice';
+import Loader from '../Loader/Loader';
+import { getUserById } from '../../store/userSlice/userSlice';
+import Headling from '../Headling/Headling';
+import { FaPen, FaMessage, FaCheck, FaCircleUser, FaCalendarDays, FaEnvelope } from "react-icons/fa6";
+import { getFullDate } from '../../utils/convertDate';
 
-const Profile = () => {
-    const { data: userMe, isLoading, isError } = useLoadUserQuery();
+const Profile = ({ userId }: { userId: string }) => {
+
+    const { user, isLoading, isError } = useSelector((state: RootState) => state.users);
+    const { user: currentUser } = useSelector((state: RootState) => state.auth);
+    const dispatch = useDispatch<AppDispatch>();
+    const isMyPage = currentUser?._id === user?._id;
+
+    useEffect(() => {
+        dispatch(getUserById(userId));
+    }, [userId, dispatch]);
 
     if (isLoading) {
-        return <div>Loading...</div>
+        return <Loader />
     }
 
     if (isError) {
@@ -22,24 +33,65 @@ const Profile = () => {
 
     return (
         <div className={styles.profile}>
-
-            <div className={styles.data}>
-                <Avatar className={styles.avatar} size="large" src={`http://localhost:8080/avatars/${userMe?.avatar}`} />
-                <div className={styles.fullname}>
-                    <span>{userMe?.surname}</span>
-                    <span>{userMe?.name}</span>
-                    <span>{userMe?.patronymic}</span>
+            <Headling className={styles.title} element="h3">Информация</Headling>
+            <div className={styles.content}>
+                <Avatar className={styles.avatar} size="large" src={`/avatars/${user?.avatar}`} />
+                <div className={styles.data}>
+                    <div
+                        className={styles.fullname}>
+                        {user?.surname} {user?.name} {user?.patronymic}
+                    </div>
+                    { user?.status === "Offline" ?
+                        <div className={styles.status}>
+                            Был(а)&nbsp;в&nbsp;сети:&nbsp;{getFullDate(user?.last_seen.toString())}
+                        </div>
+                    : <div className={styles.status}>{user?.status}</div> 
+                    }
                 </div>
             </div>
-           
-            <div className="status">Сейчас {userMe?.status === 'Offline' ? 'не в сети' : 'в сети'}</div>
-            <div className={styles.isVeridied}>
-                { userMe?.isVerified ? 'Аккаунт подтвержден' : 'Аккаунт недействителен' }
+
+            <ul className={styles['info-list']}>
+                <li className={styles['info-item']}>
+                    <div className={styles['info-title']}>
+                        <FaCircleUser/>
+                        <span className={styles.position}>Должность:</span>
+                    </div>
+                    <span>Хозяин Пиктыча</span>
+                    {/* {user?.position} */}
+                </li>
+                <li className={styles['info-item']}>
+                    <div className={styles['info-title']}>
+                        <FaCalendarDays/>
+                        <span className={styles.position}>Дата рождения:</span>
+                    </div>
+                    <span>09.03.1993</span>
+                    {/* {user?.birthday} */}
+                </li>
+                <li className={styles['info-item']}>
+                    <div className={styles['info-title']}>
+                        <FaEnvelope/>
+                        <span className={styles.position}>Почта:</span>
+                    </div>
+                    <span>{user?.email}</span>
+                </li>
+            </ul>
+
+            <div className={styles.controls}>
+                {
+                    isMyPage && <Button color="primary">
+                        <FaPen/>
+                        <span>Редактировать профиль</span>
+                    </Button>
+                }
+
+                {
+                    !isMyPage && <Button color="primary">
+                        <FaMessage/>
+                        <span>Написать</span>
+                    </Button>
+                }
             </div>
 
-            <Button color="transparent">
-                <MdMessage className={styles['profile-icon']}/>
-            </Button>
         </div>
     );
 };

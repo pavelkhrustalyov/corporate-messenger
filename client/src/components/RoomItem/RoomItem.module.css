@@ -10,7 +10,7 @@
 }
 
 .room-item:last-child {
-    /* border-bottom: none; */
+    border-bottom: none;
 }
 
 .room-item.active {

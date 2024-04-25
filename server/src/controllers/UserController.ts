@@ -22,7 +22,7 @@ export const getUserbyId = async (req: Request, res: Response, next: NextFunctio
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const users: IUserSchema[]  = await User.find().populate('name surname avatar');
+        const users: IUserSchema[]  = await User.find().populate('name surname avatar status last_seen');
         return res.status(200).json(users);
     } catch (error) {
         next(error);

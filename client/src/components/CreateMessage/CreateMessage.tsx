@@ -12,46 +12,32 @@ import { useCreateMessageMutation } from '../../store/messageSlice/messageApiSli
 import { IPropsCreateMessage } from './IPropsCreateMessage';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
-import createSocket from '../../utils/socket';
-import { Socket } from 'socket.io-client';
 import { typingData } from '../../types/types';
+import socket from '../../utils/testSocket';
 
 const CreateMessageForm = ({ roomId }: IPropsCreateMessage) => {
    
     const [currentFile, setCurrentFile] = useState<File | undefined>(undefined);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [ createMessageQuery, { isLoading } ] = useCreateMessageMutation();
-    const [socket, setSocket] = useState<Socket | null>(null);
     const [ text, setText ] = useState<string>('');
     const [dataTyping, setDataTyping] = useState<typingData>();
     const [ isOpenEmoji, setIsOpenEmoji ] = useState(false);
     const { user } = useSelector((state: RootState) => state.auth)
-    
-    useEffect(() => {
-        const newSocket = createSocket();
-        setSocket(newSocket);
-
-        if (roomId && newSocket) {
-            newSocket.emit('join-room', roomId);
-        }
-
-        return () => {
-            if (socket) {
-                socket.off("set-typing");
-            }
-        }
-    }, [])
 
     useEffect(() => {
-        if (socket) {
-            socket.on('set-typing', (data: typingData) => {
-                setDataTyping(data);
-            });
+        if (roomId && socket) {
+            socket.emit('join-room', roomId);
         }
+        socket.on('set-typing', (data: typingData) => {
+            setDataTyping(data);
+        });
         return () => {
-            socket?.off("set-typing")
+            socket.off("set-typing")
+            socket.off('join-room');
+            socket.emit('leave-room');
         }
-    }, [socket])
+    }, [socket, roomId])
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
@@ -98,6 +84,7 @@ const CreateMessageForm = ({ roomId }: IPropsCreateMessage) => {
 
             try {
                 await createMessageQuery(formData).unwrap(); // здесь поправить ошибку типизации
+                setCurrentFile(undefined);
                 setText('');
             } catch (error) {
                 if (error && error.data) {

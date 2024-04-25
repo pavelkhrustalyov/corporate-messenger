@@ -1,6 +1,8 @@
 import { IRoom } from "./IRoom";
 import { IUser } from "./IUser";
 
+export type contentType = { filename: string, size: string };
+
 export interface IMessage {
     _id: string;
     roomId: IRoom;
@@ -10,6 +12,6 @@ export interface IMessage {
     createdAt: Date;
     updatedAt?: Date;
     text?: string;
-    content?: string;
+    content?: contentType;
     my: boolean;
 }

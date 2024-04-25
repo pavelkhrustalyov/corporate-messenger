@@ -12,9 +12,16 @@ import { logOut } from '../../store/authSlice/authSlice';
 import { NavLink, useNavigate } from 'react-router-dom';
 import cn from 'classnames';
 import { MdGroupAdd, MdVideoChat, MdManageSearch, MdLogout, MdOutlineSettingsSuggest } from "react-icons/md";
+import socket from '../../utils/testSocket';
+import UserList from '../UserList/UserList';
 
 const Navigation = () => {
-    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [isOpenProfile, setIsOpenProfile] = useState<boolean>(false);
+    const [isOpenGroupChat, setIsOpenGroupChat] = useState<boolean>(false);
+    const [isOpenSettings, setIsOpenSettings] = useState<boolean>(false);
+    const [isOpenUsers, setIsOpenUsers] = useState<boolean>(false);
+    const [isOpenVideoChat, setIsOpenVideoChat] = useState<boolean>(false);
+
     const { user } = useSelector((state: RootState) => state.auth)
     const dispatch = useDispatch();
     const [ logout ] = useLogoutMutation();
@@ -25,6 +32,7 @@ const Navigation = () => {
             await logout().unwrap();
             dispatch(logOut())
             navigate('/auth/login');
+            socket.emit("user-offline", { userId: user?._id });
         } catch (error) {
             console.log(error);
         }
@@ -33,44 +41,59 @@ const Navigation = () => {
     return (
         <div className={styles.navigation}>
 
-            <Button className={styles.avatar} color="transparent" onClick={() => setIsOpen(true)}>
+            <Button className={styles.avatar} color="transparent" 
+                onClick={() => setIsOpenProfile(true)}>
                 <Avatar size="middle" src={`/avatars/${user?.avatar}`} />
             </Button>
 
             <div className={styles['icons-data']}>
-                <NavLink className={({ isActive }) => cn(styles.link, {
-                    [styles.active]: isActive
-                })} to="#" color="transparent">
+                <Button className={styles['button-nav']} color="transparent"
+                onClick={() => setIsOpenGroupChat(true)}>
                     <MdGroupAdd className={styles.icon} />
-                </NavLink>
+                </Button>
 
-                <NavLink className={({ isActive }) => cn(styles.link, {
-                    [styles.active]: isActive
-                })} to="/" color="transparent">
+                <Button className={styles['button-nav']} color="transparent"
+                onClick={() => setIsOpenUsers(true)}>
                     <MdManageSearch className={styles.icon} />
-                </NavLink>
+                </Button>
 
-                <NavLink className={({ isActive }) => cn(styles.link, {
-                    [styles.active]: isActive
-                })} to="/video-chat" color="transparent">
+                <Button className={styles['button-nav']} color="transparent"
+                onClick={() => setIsOpenVideoChat(true)}>
                     <MdVideoChat className={styles.icon} />
-                </NavLink>
+                </Button>
 
-                <NavLink className={({ isActive }) => cn(styles.link, {
-                    [styles.active]: isActive
-                })} to="/settings" color="transparent">
+                <Button className={styles['button-nav']} color="transparent"
+                onClick={() => setIsOpenSettings(true)}>
                     <MdOutlineSettingsSuggest className={styles.icon} />
-                </NavLink>
+                </Button>
             </div>
        
-
             <Button className={styles.logout} onClick={logOutHandler} color="transparent">
                 <MdLogout className={styles.icon} />
             </Button>
-            
-            <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-                <Profile />
+
+            {/* modals */}
+            <Modal isOpen={isOpenProfile} onClose={() => setIsOpenProfile(false)}>
+                { user && <Profile userId={user._id} /> }
             </Modal>
+
+            <Modal isOpen={isOpenUsers} onClose={() => setIsOpenUsers(false)}>
+                <UserList />
+            </Modal>
+
+            <Modal isOpen={isOpenGroupChat} onClose={() => setIsOpenGroupChat(false)}>
+                group chat create
+            </Modal>
+
+            <Modal isOpen={isOpenVideoChat} onClose={() => setIsOpenVideoChat(false)}>
+                video chat create
+            </Modal>
+
+            <Modal isOpen={isOpenSettings} onClose={() => setIsOpenSettings(false)}>
+                settngs
+            </Modal>
+
+
         </div>
     )
 }
