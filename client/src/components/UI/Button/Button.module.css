@@ -8,6 +8,16 @@
     transition: 0.2s all;
 }
 
+
+.button.primary:disabled {
+    background-color: gray;
+}
+
+.button.primary:disabled:hover {
+    background-color: gray;
+    cursor: not-allowed;
+}
+
 .button.primary {
     background-color: var(--bg-main-color);
 }

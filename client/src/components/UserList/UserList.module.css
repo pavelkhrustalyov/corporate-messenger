@@ -1,0 +1,19 @@
+.user-list {
+    margin: 0;
+    padding: 20px;
+    height: 150px;
+    overflow-y: scroll;
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-support-color);
+    border-radius: 10px;
+}
+
+.search {
+    padding: 10px;
+    margin: 10px 0;
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--bg-main-color);
+}

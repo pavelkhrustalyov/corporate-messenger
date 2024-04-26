@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getUserbyId, getUsers, updateAvatar, updateUser } from '../controllers/UserController';
+import { getUserbyId, getUsers, updateAvatar, updateUser, searchUsers } from '../controllers/UserController';
 import authMiddleware from '../middlewares/auth';
 import { check } from 'express-validator';
 import { uploadAvatar } from '../utils/multer';
@@ -20,6 +20,7 @@ router.patch('/upload',
     resizeAvatar, 
     updateAvatar
 );
+router.get('/search', authMiddleware, searchUsers);
 router.get('/users', authMiddleware, getUsers);
 router.get('/:userId', authMiddleware, getUserbyId);
 

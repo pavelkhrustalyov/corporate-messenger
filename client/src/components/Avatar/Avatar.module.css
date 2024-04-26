@@ -1,6 +1,10 @@
+.avatar-data {
+    position: relative;
+    overflow: hidden;
+}
+
 .avatar {
     max-width: 100%;
-    overflow: hidden;
     width: 100px;
     height: 100px;
     border-radius: 100%;
@@ -19,4 +23,15 @@
 .avatar.large {
     width: 80px;
     height: 80px;
+}
+
+.online {
+    position: absolute;
+    display: block;
+    bottom: 3px;
+    right: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    background-color: green;
 }

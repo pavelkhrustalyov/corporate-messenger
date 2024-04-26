@@ -9,20 +9,42 @@ import { RootState } from '../../store/store';
 import Avatar from '../Avatar/Avatar';
 import { useLogoutMutation } from '../../store/authSlice/authApiSlice';
 import { logOut } from '../../store/authSlice/authSlice';
-import { NavLink, useNavigate } from 'react-router-dom';
-import cn from 'classnames';
-import { MdGroupAdd, MdVideoChat, MdManageSearch, MdLogout, MdOutlineSettingsSuggest } from "react-icons/md";
+import { useNavigate } from 'react-router-dom';
+import { MdGroupAdd, MdVideoChat, MdLogout, MdOutlineSettingsSuggest } from "react-icons/md";
+import { AiFillWechat } from "react-icons/ai";
 import socket from '../../utils/testSocket';
-import UserList from '../UserList/UserList';
+
+import { 
+    openGroupChatModal, 
+    openPrivateChatModal, 
+    openProfileModal, 
+    openSettingsModal, 
+    openUsersModal, 
+    openVideoChatModal } from '../../store/modalSlice/modalSlice';
+
+import {
+    closeGroupChatModal,
+    closeProfileModal,
+    closeSettingsModal,
+    closePrivateChatModal,
+    closeVideoChatModal
+} from '../../store/modalSlice/modalSlice';
+import Form from '../Form/Form';
+import Input from '../UI/Input/Input';
+import CreateRoom from '../CreatePrivateRoom/CreateRoom';
+
 
 const Navigation = () => {
-    const [isOpenProfile, setIsOpenProfile] = useState<boolean>(false);
-    const [isOpenGroupChat, setIsOpenGroupChat] = useState<boolean>(false);
-    const [isOpenSettings, setIsOpenSettings] = useState<boolean>(false);
-    const [isOpenUsers, setIsOpenUsers] = useState<boolean>(false);
-    const [isOpenVideoChat, setIsOpenVideoChat] = useState<boolean>(false);
-
+    
     const { user } = useSelector((state: RootState) => state.auth)
+    const { 
+        isOpenProfile, 
+        isOpenGroupChat,
+        isOpenSettings,
+        isOpenPrivateChat,
+        isOpenVideoChat,
+        userIdFromModal } = useSelector((state: RootState) => state.modal);
+
     const dispatch = useDispatch();
     const [ logout ] = useLogoutMutation();
     const navigate = useNavigate();
@@ -40,62 +62,65 @@ const Navigation = () => {
 
     return (
         <div className={styles.navigation}>
-
             <Button className={styles.avatar} color="transparent" 
-                onClick={() => setIsOpenProfile(true)}>
+                onClick={() => dispatch(openProfileModal(user?._id))}>
                 <Avatar size="middle" src={`/avatars/${user?.avatar}`} />
             </Button>
 
             <div className={styles['icons-data']}>
-                <Button className={styles['button-nav']} color="transparent"
-                onClick={() => setIsOpenGroupChat(true)}>
+                <Button className={styles['button-nav']} color="transparent" 
+                    onClick={() => dispatch(openGroupChatModal())}>
                     <MdGroupAdd className={styles.icon} />
                 </Button>
 
-                <Button className={styles['button-nav']} color="transparent"
-                onClick={() => setIsOpenUsers(true)}>
-                    <MdManageSearch className={styles.icon} />
+                <Button className={styles['button-nav']} color="transparent" 
+                    onClick={() => dispatch(openPrivateChatModal())}>
+                    <AiFillWechat className={styles.icon} />
                 </Button>
 
-                <Button className={styles['button-nav']} color="transparent"
-                onClick={() => setIsOpenVideoChat(true)}>
+                <Button className={styles['button-nav']} color="transparent" 
+                    onClick={() => dispatch(openVideoChatModal())}>
                     <MdVideoChat className={styles.icon} />
                 </Button>
 
-                <Button className={styles['button-nav']} color="transparent"
-                onClick={() => setIsOpenSettings(true)}>
+                <Button className={styles['button-nav']} color="transparent" 
+                    onClick={() => dispatch(openSettingsModal())}>
                     <MdOutlineSettingsSuggest className={styles.icon} />
                 </Button>
             </div>
        
-            <Button className={styles.logout} onClick={logOutHandler} color="transparent">
+            <Button className={styles.logout} 
+                onClick={logOutHandler} color="transparent">
                 <MdLogout className={styles.icon} />
             </Button>
 
             {/* modals */}
-            <Modal isOpen={isOpenProfile} onClose={() => setIsOpenProfile(false)}>
-                { user && <Profile userId={user._id} /> }
+
+            <Modal isOpen={isOpenProfile} onClose={() => dispatch(closeProfileModal())}>
+                { userIdFromModal && <Profile userId={userIdFromModal} /> }
             </Modal>
 
-            <Modal isOpen={isOpenUsers} onClose={() => setIsOpenUsers(false)}>
-                <UserList />
+            <Modal isOpen={isOpenGroupChat} 
+                onClose={() => dispatch(closeGroupChatModal())}>
+                <CreateRoom typeRoom='group'/>
             </Modal>
 
-            <Modal isOpen={isOpenGroupChat} onClose={() => setIsOpenGroupChat(false)}>
-                group chat create
+            <Modal isOpen={isOpenPrivateChat} 
+                onClose={() => dispatch(closePrivateChatModal())}>
+                <CreateRoom typeRoom='private'/>
             </Modal>
 
-            <Modal isOpen={isOpenVideoChat} onClose={() => setIsOpenVideoChat(false)}>
+            <Modal isOpen={isOpenVideoChat} 
+                onClose={() => dispatch(closeVideoChatModal())}>
                 video chat create
             </Modal>
 
-            <Modal isOpen={isOpenSettings} onClose={() => setIsOpenSettings(false)}>
+            <Modal isOpen={isOpenSettings} 
+                onClose={() => dispatch(closeSettingsModal())}>
                 settngs
             </Modal>
-
-
         </div>
-    )
+    );
 }
 
 export default Navigation;

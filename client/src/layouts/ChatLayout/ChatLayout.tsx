@@ -57,22 +57,6 @@ const ChatLayout = () => {
         };
     }, []);
 
-    useEffect(() => {
-        socket.on("offline", (userId) => {
-            dispatch(updateStatusInRooms({ userId, status: "Offline" }));
-        })
-
-        socket.on("online", (userId) => {
-            dispatch(updateStatusInRooms({ userId, status: "Online" }));
-        })
-
-        return () => {
-            socket.off("offline");
-            socket.off("online");
-        }
-    }, [socket, dispatch, updateStatusInRooms]);
-
-
     return (
         <div className={styles['chat-layout']}>
             <Navigation />

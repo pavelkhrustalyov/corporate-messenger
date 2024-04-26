@@ -5,6 +5,7 @@ import { userSlice } from './userSlice/userSlice';
 import { apiSlice } from './apiSlice';
 import { roomSlice } from './roomSlice/roomSlice';
 import { messageSlice } from './messageSlice/messageSlice';
+import { modalSlice } from './modalSlice/modalSlice';
 
 // Создаем Redux store
 export const store = configureStore({
@@ -14,6 +15,7 @@ export const store = configureStore({
     users: userSlice.reducer,
     auth: authSlice.reducer,
     messages: messageSlice.reducer,
+    modal: modalSlice.reducer,
   },
 
   middleware: (getDefaultMiddleware) => getDefaultMiddleware()

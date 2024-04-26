@@ -36,11 +36,11 @@
     transition: 0.2s linear all;
 }
 
-.button-nav:active {
+.link:active {
     transform: translateY(2px);
 }
 
-.navigation button:last-child {
+.navigation link:last-child {
     margin-bottom: 0;
 }
 

@@ -9,9 +9,12 @@
 }
 
 .modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     position: absolute;
     padding: 20px;
-    min-width: 300px;
+    min-width: 350px;
     top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);

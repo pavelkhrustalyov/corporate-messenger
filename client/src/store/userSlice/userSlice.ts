@@ -1,4 +1,4 @@
- import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { IUser } from '../../interfaces/IUser';
 import axios, { AxiosError } from 'axios';
 
@@ -33,6 +33,37 @@ export const getUserById = createAsyncThunk(
     }
 )
 
+export const getUsers = createAsyncThunk(
+    'users/searchUsers',
+    async () => {
+        try {
+            const response = await axios.get<IUser[]>(`/api/user/users`);
+            return response.data;
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                console.log(error.response?.data.message);
+            } else {
+                console.log(error);
+            }
+        }
+    }
+)
+
+export const searchUsers = createAsyncThunk(
+    'users/searchUsers',
+    async (query: string) => {
+        try {
+            const response = await axios.get<IUser[]>(`/api/user/search?query=${query}`);
+            return response.data;
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                console.log(error.response?.data.message);
+            } else {
+                console.log(error);
+            }
+        }
+    }
+)
 
 export const userSlice = createSlice({
     name: 'user',
@@ -52,6 +83,23 @@ export const userSlice = createSlice({
             state.isError = false;
         })
         builder.addCase(getUserById.rejected, (state) => {
+            state.isLoading = false;
+            state.isError = true;
+        })
+
+        // search users
+        builder.addCase(searchUsers.pending, (state) => {
+            state.isLoading = true;
+            state.isError = false;
+        })
+        builder.addCase(searchUsers.fulfilled, (state, action) => {
+            if (action.payload) {
+                state.users = action.payload;
+            }
+            state.isLoading = false;
+            state.isError = false;
+        })
+        builder.addCase(searchUsers.rejected, (state) => {
             state.isLoading = false;
             state.isError = true;
         })

@@ -1,0 +1,38 @@
+.user-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.user-data {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.title {
+    margin: 0 10px;
+}
+
+.status {
+    display: none;
+    height: 10px;
+    width: 10px;
+    background-color: var(--online-color);
+    border-radius: 100%;
+}
+
+.status.is-online {
+    display: block;
+}
+
+.add {
+    font-size: 25px;
+    color: var(--bg-main-color);
+}
+
+.done {
+    font-size: 25px;
+    color: var(--online-color);
+}

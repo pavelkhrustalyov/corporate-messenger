@@ -18,7 +18,7 @@ const router = createBrowserRouter([
     element: (<PrivateRoute><ChatLayout /></PrivateRoute>),
     children: [
       { path: '/:roomId', element: <RoomPage /> },
-      { path: '/', element: <ChatPlaceholder /> }
+      { path: '/', element: <ChatPlaceholder /> },
     ]
   },
   {

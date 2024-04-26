@@ -1,6 +1,7 @@
 .message-item {
    position: relative;
    display: flex;
+   align-items: end;
    margin-bottom: 50px;
    justify-content: center;
 }

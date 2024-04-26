@@ -13,7 +13,7 @@ const Modal = ({ isOpen, onClose, children }: IModalProps) => {
     return (
         <div className={styles['modal-overlay']} onClick={onClose}>
             <div className={styles['modal-content']} onClick={(e) => e.stopPropagation()}>
-                {children}
+                { children }
             </div>
         </div>
     );

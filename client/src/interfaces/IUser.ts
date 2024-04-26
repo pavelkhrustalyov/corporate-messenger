@@ -9,5 +9,6 @@ export interface IUser {
     notifications?: string[];
     isVerified?: boolean;
     avatar: string | "default.jpg";
+    birthday: Date;
     last_seen: number,
 }

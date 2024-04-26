@@ -1,0 +1,19 @@
+.create-room {
+
+}
+
+.title {
+    margin-bottom: 10px;
+}
+
+.controllers {
+    display: flex;
+    flex-direction: column;
+}
+
+.title-field {
+    border: 1px solid var(--bg-main-color);
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}

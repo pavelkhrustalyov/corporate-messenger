@@ -29,6 +29,23 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction) 
     }
 }
 
+export const searchUsers = async (req: Request, res: Response, next: NextFunction) => {
+    const { query } = req.query as { query: string };
+    try {
+        const users: IUserSchema[]  = await User.find({
+            $or: [
+                { name: new RegExp(query, 'i') },
+                { surname: new RegExp(query, 'i') }
+            ]
+        }).select('name surname status avatar last_seen');
+        return res.status(200).json(users);
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     const { name, surname, patronymic, email }: IUserSchema = req.body;
 

@@ -5,10 +5,11 @@ import cn from 'classnames';
 import Avatar from '../Avatar/Avatar';
 import { BsCheck2All, BsCheck2 } from "react-icons/bs";
 import { FaFile } from "react-icons/fa6";
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store/store';
 import { convertBytes } from '../../utils/convertBytes';
 import { getTime } from '../../utils/convertDate';
+import { openProfileModal } from '../../store/modalSlice/modalSlice';
 
 interface IMessageItemProps {
     message: IMessage,
@@ -17,6 +18,7 @@ interface IMessageItemProps {
 
 const MessageItem = ({ message, roomType }: IMessageItemProps) => {
     const { user } = useSelector((state: RootState) => state.auth);
+    const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
         const downloadLink = document.getElementById('downloadLink');
@@ -39,8 +41,9 @@ const MessageItem = ({ message, roomType }: IMessageItemProps) => {
             [styles['type-image']]: message.messageType === 'image'
         })}>
             {
-                (roomType === 'private' && !isMyMessage) && (
+                (roomType === 'group' && !isMyMessage) && (
                     <Avatar 
+                        isOnline={message.senderId.status === "Online"}
                         className={styles.avatar}
                         size='small' 
                         src={`/avatars/${message.senderId.avatar}`}
@@ -50,8 +53,8 @@ const MessageItem = ({ message, roomType }: IMessageItemProps) => {
             <div
                 className={cn(styles['message-data'])}>
                 {
-                    (roomType === 'private' && !isMyMessage) && (
-                        <div className={styles['user-data']}>
+                    (roomType === 'group' && !isMyMessage) && (
+                        <div  onClick={() => dispatch(openProfileModal(message.senderId._id))} className={styles['user-data']}>
                             <div className={styles.name}>{message.senderId.name}</div>
                             <div className={styles.surname}>{message.senderId.surname}</div>
                         </div>

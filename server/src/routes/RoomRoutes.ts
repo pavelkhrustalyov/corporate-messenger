@@ -1,12 +1,11 @@
 import { Router } from 'express';
 
 import { getRooms, 
-    createPrivateRoom, 
-    createGroupRoom, 
     deleteRoom, 
     inviteToGroupRoom,
     kickOutOfGroup,
-    getRoomById } from '../controllers/RoomControllers';
+    getRoomById,
+    createRoom } from '../controllers/RoomControllers';
 
 import authMiddleware from '../middlewares/auth';
 
@@ -16,8 +15,7 @@ router.patch('/:roomId/kick/:recipientId', authMiddleware, kickOutOfGroup);
 
 router.get('/rooms', authMiddleware, getRooms);
 router.get('/:roomId', authMiddleware, getRoomById);
-router.post('/create/group', authMiddleware, createGroupRoom);
-router.post('/create/:recipientId', authMiddleware, createPrivateRoom);
+router.post('/create-room', authMiddleware, createRoom);
 router.delete('/delete/:roomId', authMiddleware, deleteRoom);
 router.patch('/invite', authMiddleware, inviteToGroupRoom);
 

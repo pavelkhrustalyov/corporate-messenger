@@ -9,15 +9,21 @@ import Button from '../UI/Button/Button';
 import Loader from '../Loader/Loader';
 import { getUserById } from '../../store/userSlice/userSlice';
 import Headling from '../Headling/Headling';
-import { FaPen, FaMessage, FaCheck, FaCircleUser, FaCalendarDays, FaEnvelope } from "react-icons/fa6";
+import { FaPen, FaMessage, FaCircleUser, FaCalendarDays, FaEnvelope } from "react-icons/fa6";
 import { getFullDate } from '../../utils/convertDate';
+import { createPrivateRoom } from '../../store/roomSlice/roomSlice';
 
 const Profile = ({ userId }: { userId: string }) => {
-
     const { user, isLoading, isError } = useSelector((state: RootState) => state.users);
     const { user: currentUser } = useSelector((state: RootState) => state.auth);
     const dispatch = useDispatch<AppDispatch>();
     const isMyPage = currentUser?._id === user?._id;
+
+    // const createPrivateRoomHandler = (userId: string) => {
+    //     const isConfirm = confirm("Вы хотите создать диалог?");
+    //     if (isConfirm)
+    //         dispatch(createPrivateRoom({ lastMessage: '', userId })); // пофиксить
+    // }
 
     useEffect(() => {
         dispatch(getUserById(userId));
@@ -56,16 +62,16 @@ const Profile = ({ userId }: { userId: string }) => {
                         <FaCircleUser/>
                         <span className={styles.position}>Должность:</span>
                     </div>
-                    <span>Хозяин Пиктыча</span>
-                    {/* {user?.position} */}
+                    <span>{user?.position}</span>
+                    
                 </li>
                 <li className={styles['info-item']}>
                     <div className={styles['info-title']}>
                         <FaCalendarDays/>
                         <span className={styles.position}>Дата рождения:</span>
                     </div>
-                    <span>09.03.1993</span>
-                    {/* {user?.birthday} */}
+                    {/* <span>{user?.birthday.toISOString()}</span> */}
+                    
                 </li>
                 <li className={styles['info-item']}>
                     <div className={styles['info-title']}>
@@ -81,13 +87,6 @@ const Profile = ({ userId }: { userId: string }) => {
                     isMyPage && <Button color="primary">
                         <FaPen/>
                         <span>Редактировать профиль</span>
-                    </Button>
-                }
-
-                {
-                    !isMyPage && <Button color="primary">
-                        <FaMessage/>
-                        <span>Написать</span>
                     </Button>
                 }
             </div>

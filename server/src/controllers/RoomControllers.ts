@@ -36,65 +36,65 @@ export const getRoomById = async (req: Request, res: Response, next: NextFunctio
     }
 }
 
-export const createPrivateRoom = async (req: Request, res: Response, next: NextFunction) => {
-    const { type, lastMessage = "" } = req.body;
-    const { recipientId } = req.params;
-
-    if (recipientId === req.user?._id.toString()) {
-        return res.status(400).json({ message: 'Вы не можете пригласить себя' });
-    }
-
-    const existingRoom = await Room.findOne({
-        type: 'private',
-        participants: { $all: [req.user?._id, recipientId] }
-    });
-
-    if (existingRoom) {
-        return res.status(400).json({ message: 'Данный чат уже существует' });
-    }
+export const createRoom = async (req: Request, res: Response, next: NextFunction) => {
+    const { type, title, users } = req.body;
 
     try {
-        const room = await Room.create({
-            type,
-            participants: [req.user?._id, recipientId],
-            lastMessage
-        })
+        if (!users.length) {
+            res.status(401);
+            throw new Error("Выберите собеседника");
+        }
+
+        let room: IRoomSchema;
+
+        if (type === "private") {
+            if (users.length === 1) {
+                const [ user ] = users;
+
+                const existingRoom = await Room.findOne({
+                    type: 'private',
+                    participants: { $all: [ req.user?._id, user ] }
+                });
+
+                if (existingRoom) {
+                    res.status(401);
+                    throw new Error("Данный чат уже существует");
+                }
+                
+                room = await Room.create({
+                    type,
+                    participants: [ req.user?._id, user ],
+                    lastMessage: ""
+                })
+            } else {
+                res.status(401);
+                throw new Error("В приватном чате максимум 1 собеседник");
+            }
+        } else {
+            if (!title) {
+                res.status(401);
+                throw new Error('Название группы обязательно!');
+            }
+
+            room = await Room.create({
+                creator: req.user?._id,
+                type,
+                title,
+                participants: [req.user?._id, ...users],
+                lastMessage: "",
+                imageGroup: 'default-group.png'
+            })
+        }
 
         await room.save();
-
-        const message = await Message.create({
-            roomId: room._id,
-            text: lastMessage,
-            messageType: "text",
-            senderId: req.user?._id,
-            content: null,
-        });
-
-        await message.save();
-
-        return res.status(200).json(room);
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const createGroupRoom = async (req: Request, res: Response, next: NextFunction) => {
-    const { type, title, lastMessage = "" } = req.body;
-
-    try {
-        const room = await Room.create({
-            creator: req.user?._id,
-            type,
-            title,
-            participants: [ req.user?._id ],
-            imageGroup: 'default-group.png',
-            lastMessage
-        })
+        await room.populate({ path: "participants", select: "name surname avatar status" });
 
         return res.status(201).json(room);
+
     } catch (error) {
         next(error);
     }
+    
 };
 
 export const deleteRoom = async (req: Request, res: Response, next: NextFunction) => {

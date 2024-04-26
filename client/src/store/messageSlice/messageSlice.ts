@@ -28,12 +28,25 @@ export const getMessages = createAsyncThunk(
     },
 )
 
+type PayloadStatusData = {
+    status: 'Online' | 'Offline';
+    userId: string;
+}
+
 export const messageSlice = createSlice({
     name: 'message',
     initialState,
     reducers: {
         createMessage: (state, action: PayloadAction<IMessage>) => {
             state.messages = [...state.messages, action.payload];
+        },
+        updateStatusInMessage: (state, action: PayloadAction<PayloadStatusData>) => {
+            state.messages = state.messages.map(message => {
+                if (message.senderId._id === action.payload.userId) {
+                    return { ...message, senderId: { ...message.senderId, status: action.payload.status }}
+                }
+                return message;
+            })
         }
     },
     extraReducers: (builder) => {
@@ -58,4 +71,4 @@ export const messageSlice = createSlice({
 });
 
 export default messageSlice.reducer;
-export const { createMessage } = messageSlice.actions;
+export const { createMessage, updateStatusInMessage } = messageSlice.actions;

@@ -1,37 +1,32 @@
-import { useEffect, useState } from 'react';
 import Modal from '../Modal/Modal';
 import styles from './RoomHeader.module.css';
 import Button from '../UI/Button/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
 import Avatar from '../Avatar/Avatar';
-import { getRoomById, updateStatusInRoom } from '../../store/roomSlice/roomSlice';
-import Profile from '../Profile/Profile';
 import { FaCirclePlus } from "react-icons/fa6";
 import { IMessage } from '../../interfaces/IMessage';
-import socket from '../../utils/testSocket';
 import { getFullDate } from '../../utils/convertDate';
+import { 
+        closeRoomDataModal,
+        openRoomDataModal, 
+        closeTitleModal, 
+        openTitleModal, 
+        openProfileModal
+ } from '../../store/modalSlice/modalSlice';
 
-const RoomHeader = ({ roomId, messages }: { roomId: string, messages: IMessage[] }) => {
-    const [isOpen, setIsOpen] = useState<boolean>(false);
-    const [isOpenTitle, setIsOpenTitle] = useState<boolean>(false);
+import { IRoom } from '../../interfaces/IRoom';
+
+interface IPropsRoomHeader {
+    messages: IMessage[]; 
+    room: IRoom | null;
+}
+
+const RoomHeader = ({ messages, room }: IPropsRoomHeader) => {
     const dispatch = useDispatch<AppDispatch>();
     const { user } = useSelector((state: RootState) => state.auth);
-    const { room } = useSelector((state: RootState) => state.rooms);
+    const { isOpenRoomData, isOpenTitle } = useSelector((state: RootState) => state.modal);
 
-    useEffect(() => {
-        dispatch(getRoomById(roomId))
-    }, [roomId, dispatch, getRoomById])
-
-    useEffect(() => {
-        socket.on("online", (userId: string) => {
-            dispatch(updateStatusInRoom({ userId, roomId, status: "Online", last_seen: Date.now() }));
-        });
-        socket.on("offline", (userId: string) => {
-            dispatch(updateStatusInRoom({ userId, roomId, status: "Offline", last_seen: Date.now() }));
-        });
-    }, [socket])
-    
     const interlocutor = room?.participants.find(p => p._id !== user?._id);
 
     const messagesFiles = messages.filter(message => message.messageType === 'file');
@@ -45,19 +40,19 @@ const RoomHeader = ({ roomId, messages }: { roomId: string, messages: IMessage[]
                 {
                     room?.type === 'group' 
                     ? <Avatar src={`/group_avatars/${room.imageGroup}`} size='middle' />
-                    : <Avatar src={`/avatars/${interlocutor?.avatar}`} size='middle' />
+                    : <Avatar isOnline={interlocutor?.status === "Online"} src={`/avatars/${interlocutor?.avatar}`} size='middle' />
                 }
 
                 <div className={styles["user-data"]}>
                     {
                         room?.type === 'group' 
-                        ? <div onClick={() => setIsOpenTitle(true)} className={styles.title}>{room.title}</div>
+                        ? <div onClick={() => dispatch(openTitleModal())} className={styles.title}>{room.title}</div>
                         : (
                             <>
-                                <div onClick={() => setIsOpenTitle(true)} className={styles.title}>{interlocutor?.name} {interlocutor?.surname}</div>
+                                <div onClick={() => dispatch(openProfileModal(interlocutor?._id))} className={styles.title}>{interlocutor?.name} {interlocutor?.surname}</div>
                                 { interlocutor?.status === "Offline" ?
                                   <div className={styles.status}>
-                                    Был(а)&nbsp;в&nbsp;сети:&nbsp;{getFullDate(interlocutor?.last_seen.toString())}
+                                    Был(а)&nbsp;в&nbsp;сети:&nbsp;{getFullDate(new Date(interlocutor.last_seen).toString())}
                                   </div> 
                                 : <div className={styles.status}>{interlocutor?.status}</div> 
                                 }
@@ -78,12 +73,12 @@ const RoomHeader = ({ roomId, messages }: { roomId: string, messages: IMessage[]
                             <Button color="transparent">
                                 <img className={styles.icon} src="video.svg" alt="начать видеочат" />
                             </Button>
-                            <Button color="transparent" onClick={() => setIsOpen(true)} >
+                            <Button color="transparent" onClick={() => dispatch(openRoomDataModal())} >
                                 <img className={styles.icon} src="more.svg" alt="Подробнее" />
                             </Button>
                         </>
                     ) : (
-                        <Button color="transparent" onClick={() => setIsOpen(true)} >
+                        <Button color="transparent" onClick={() => dispatch(openRoomDataModal())} >
                             <FaCirclePlus className={styles.icon}/>
                         </Button>
                     )
@@ -93,10 +88,7 @@ const RoomHeader = ({ roomId, messages }: { roomId: string, messages: IMessage[]
             {
                 room?.type === "private" ? (
                     <>
-                        <Modal isOpen={isOpenTitle} onClose={() => setIsOpenTitle(false)}>
-                            { interlocutor && <Profile userId={interlocutor?._id} /> }
-                        </Modal>
-                        <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+                        <Modal isOpen={isOpenRoomData} onClose={() => dispatch(closeRoomDataModal())}>
                             данные о комнате
                             
                             Количество файлов: { fileList.length }
@@ -106,13 +98,13 @@ const RoomHeader = ({ roomId, messages }: { roomId: string, messages: IMessage[]
                     
                 ) : (
                     <>
-                        <Modal isOpen={isOpenTitle} onClose={() => setIsOpenTitle(false)}>
+                        <Modal isOpen={isOpenTitle} onClose={() => dispatch(closeTitleModal())}>
                             данные о группе
                             Количество файлов: { fileList.length }
                             Количество Изображений: { imageList.length }
                             участники: {room?.participants.length}
                         </Modal>
-                        <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+                        <Modal isOpen={isOpenRoomData} onClose={() => dispatch(closeRoomDataModal())}>
                             Пригласить в комнату
                         </Modal>
                     </>
