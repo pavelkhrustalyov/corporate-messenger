@@ -8,22 +8,21 @@ import cn from 'classnames';
 import { IUser } from '../../interfaces/IUser';
 import { openProfileModal } from '../../store/modalSlice/modalSlice';
 import { FaCirclePlus } from "react-icons/fa6";
-import { AiFillCheckCircle } from "react-icons/ai";
-import { useState } from 'react';
+import { AiFillCheckCircle, AiFillDelete } from "react-icons/ai";
 
 interface IPropsUserItem {
     user: IUser, 
-    addUserToRoom?: (userId: string) => void
+    addUserToRoom?: (userId: string) => void;
+    userIds?: string[];
+    deleteUser?: (userId: string) => void;
 }
 
-const UserItem = ({ user, addUserToRoom }: IPropsUserItem) => {
+const UserItem = ({ user, addUserToRoom, userIds, deleteUser }: IPropsUserItem) => {
     const dispatch = useDispatch<AppDispatch>();
     const currentUser = useSelector((state: RootState) => state.auth.user);
-    const [ isAdded, setIsAdded ] = useState<boolean>(false);
 
     const addUserToRoomHandler = (userId: string) => {
         if (addUserToRoom) {
-            setIsAdded((prev) => !prev);
             addUserToRoom(userId)
         }
     };
@@ -43,15 +42,28 @@ const UserItem = ({ user, addUserToRoom }: IPropsUserItem) => {
                     [styles['is-online']]: user.status === "Online"
                 })}></span>
             </div>
-            { addUserToRoom && currentUser?._id !== user._id &&
-                <Button 
+
+            { 
+                addUserToRoom && currentUser?._id !== user._id &&
+                    <Button 
+                        color='transparent' 
+                        onClick={() => addUserToRoomHandler(user._id)}>
+                        {
+                            userIds && !userIds.includes(user._id) ? <FaCirclePlus className={styles.add} />
+                            : <AiFillCheckCircle className={styles.done} />
+                        }
+                    </Button> 
+            }
+            {
+                deleteUser && currentUser?._id !== user._id && 
+                userIds && !userIds.includes(user._id) &&
+                <Button
+                    className={styles.delete}
                     color='transparent' 
-                    onClick={() => addUserToRoomHandler(user._id)}>
-                    {
-                        !isAdded ? <FaCirclePlus className={styles.add} />
-                        : <AiFillCheckCircle className={styles.done} />
-                    }
-                </Button> }
+                    onClick={() => deleteUser(user._id)}>
+                    <AiFillDelete />
+                </Button>
+            }
         </li>
     ) 
 };

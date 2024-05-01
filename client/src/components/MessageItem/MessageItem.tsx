@@ -83,17 +83,18 @@ const MessageItem = ({ message, roomType }: IMessageItemProps) => {
                 )
                 }
                 <div className={styles['message-text']}>{message.text}</div>
-
+                    <div className={styles.date}>
+                        <span>{ getTime(message.createdAt.toString()) }</span>
+                    
+                        { isMyMessage && (
+                            <span className={styles.readed}>{ message.isRead ? 
+                                <BsCheck2All className={styles.readed} /> : 
+                                <BsCheck2 className={styles.readed} /> }
+                            </span>
+                        )}
+                    </div>
                 </div>
-                <div className={styles.date}>
-                    { isMyMessage && (
-                        <span className={styles.readed}>{ message.isRead ? 
-                            <BsCheck2All className={styles['read-check']} /> : 
-                            <BsCheck2 className={styles['read-uncheck']} /> }
-                        </span>
-                    )}
-                <span>{ getTime(message.createdAt.toString()) }</span>
-            </div>
+               
         </div>
     )
 };

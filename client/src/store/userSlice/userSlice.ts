@@ -19,7 +19,6 @@ const initialState: IState = {
 export const getUserById = createAsyncThunk(
     'users/getUserById',
     async (userId: string) => {
-        console.log(userId)
         try {
             const response = await axios.get<IUser>(`/api/user/${userId}`)
             return response.data;

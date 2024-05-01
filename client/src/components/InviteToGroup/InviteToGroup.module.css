@@ -1,0 +1,4 @@
+.invite-to-group {
+    display: flex;
+    flex-direction: column;
+}

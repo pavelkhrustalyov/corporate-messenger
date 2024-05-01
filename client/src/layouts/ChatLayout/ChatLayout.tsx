@@ -4,13 +4,11 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import Navigation from '../../components/Navigation/Navigation';
 import socket from '../../utils/testSocket';
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../store/store';
-import { updateStatusInRooms } from '../../store/roomSlice/roomSlice';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 
 const ChatLayout = () => {
     const { user } = useSelector((state: RootState) => state.auth);
-    const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
         const handleBeforeUnload = () => {
@@ -44,10 +42,15 @@ const ChatLayout = () => {
     
     useEffect(() => {
         socket.on('connect', () => {
+            console.log('connect');
             socket.emit('user-online', { userId: user?._id });
+        });
+        socket.on('error', (error) => {
+            console.error('Socket error:', error);
         });
 
         socket.on('disconnect', () => {
+            console.log('disconnect');
             socket.emit('user-offline', { userId: user?._id });
         });
 

@@ -11,4 +11,5 @@ export interface IRoom {
     lastMessage: string;
     createdAt: string;
     updatedAt: string;
+    archived: boolean;
 }

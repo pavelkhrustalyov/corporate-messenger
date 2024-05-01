@@ -21,22 +21,25 @@ const RoomItem = ({ room }: IRoomItemProps) => {
         return msg.length > cupChars ? `${msg.slice(0, cupChars)}...` : msg;
     };
 
-    // const dispatch = useDispatch<AppDispatch>();
-
-    // useEffect(() => {
-    //     socket.on("offline", (userId) => {
-    //         dispatch(updateStatusInRooms({ userId, status: "Offline", last_seen: Date.now() }));
-    //     })
-
-    //     socket.on("online", (userId) => {
-    //         dispatch(updateStatusInRooms({ userId, status: "Online" }));
-    //     })
-
-    //     return () => {
-    //         socket.off("offline");
-    //         socket.off("online");
-    //     }
-    // }, [socket]);
+    const dispatch = useDispatch<AppDispatch>();
+    
+    useEffect(() => {
+        const handleOnline = (userId: string) => {
+            dispatch(updateStatusInRooms({ userId, status: "Online" }));
+        };
+    
+        const handleOffline = (userId: string) => {
+            dispatch(updateStatusInRooms({ userId, status: "Offline" }));
+        };
+    
+        socket.on("online", handleOnline);
+        socket.on("offline", handleOffline);
+    
+        return () => {
+            socket.off("online", handleOnline);
+            socket.off("offline", handleOffline);
+        };
+    }, [room]);
 
     const interlocutor = room.participants.find(p => p._id !== user?._id)
 

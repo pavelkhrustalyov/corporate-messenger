@@ -44,7 +44,7 @@ body {
     --text-light-color: #fff;
     --active-border: #F3B559;
     --button-hover: #3e3ebc;
-    --active-tab: #612DD1;
+    --active-tab: rgba(0, 0, 0, 0.1);
     --text-dark-color: black;
     --text-support-color: #303030;
     --icon-color: rgb(173, 173, 173);

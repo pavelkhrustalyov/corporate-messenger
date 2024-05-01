@@ -11,6 +11,10 @@
     border-radius: 10px;
 }
 
+.profile-modal {
+    z-index: 2000;
+}
+
 .icons-data {
     display: flex;
     flex-direction: column;

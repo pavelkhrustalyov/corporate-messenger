@@ -36,3 +36,8 @@
     font-size: 25px;
     color: var(--online-color);
 }
+
+.delete {
+    font-size: 25px;
+    color: var(--ui-danger-color);
+}

@@ -1,15 +1,22 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IRoom } from '../../interfaces/IRoom';
 import axios, { AxiosError } from 'axios';
-// import { RootState } from '../store';
+import { AppDispatch } from '../store';
+import { closeGroupChatModal, closePrivateChatModal } from '../modalSlice/modalSlice';
 
 const BASE_URL = '/api/room';
 
 interface IInitialState {
-    roomList: IRoom[] | [],
-    room: IRoom | null,
-    isLoading: boolean,
-    isError: boolean
+    roomList: IRoom[] | [];
+    room: IRoom | null;
+    isLoading: boolean;
+    isError: boolean;
+}
+
+interface IRoomCreateData {
+    title?: string;
+    type: "private" | "group";
+    users: string[];
 }
 
 const initialState: IInitialState = {
@@ -33,13 +40,66 @@ export const getRoomById = createAsyncThunk(
     },
 )
 
-export const createPrivateRoom = createAsyncThunk<IRoom, { userId: string, lastMessage: string }>(
-    'rooms/createPrivateRoom',
-    async (data: { userId: string, lastMessage: string }) => {
+export const createRoom = createAsyncThunk<IRoom, IRoomCreateData>(
+    'rooms/createRoom',
+    async (data: IRoomCreateData, thunkAPI) => {
+        const dispatch = thunkAPI.dispatch as AppDispatch;
         try {
-            const responce = await axios.post(`${BASE_URL}/create/${data.userId}`, {
-                lastMessage: data.lastMessage
-            });
+            const responce = await axios.post(`${BASE_URL}/create-room`, data);
+            if (data.type === "private") {
+                dispatch(closePrivateChatModal())
+            } else {
+                dispatch(closeGroupChatModal())
+            }
+            return responce.data;
+
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                console.log(error.response?.data.message);
+            } else {
+                console.log(error);
+            }
+        }
+    }
+)
+
+export const getRooms = createAsyncThunk<IRoom[]>(
+    'rooms/getRooms',
+    async () => {
+        try {
+            const responce = await axios.get(`${BASE_URL}/rooms`);
+            return responce.data;
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                console.log(error.response?.data.message);
+            } else {
+                console.log(error);
+            }
+        }
+    }
+)
+
+export const inviteToGroupRoom = createAsyncThunk(
+    'rooms/inviteToGroupRoom',
+    async (data: { roomId: string, participants: string[] }) => {
+        try {
+            const responce = await axios.patch(`${BASE_URL}/invite`, data);
+            return responce.data;
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                console.log(error.response?.data.message);
+            } else {
+                console.log(error);
+            }
+        }
+    }
+)
+
+export const kickOutOfGroup = createAsyncThunk(
+    'rooms/kickOutOfGroup',
+    async (data: { roomId: string, userId: string }) => {
+        try {
+            const responce = await axios.patch(`${BASE_URL}/kickOut`, data);
             return responce.data;
         } catch (error) {
             if (error instanceof AxiosError) {
@@ -64,16 +124,10 @@ export const roomSlice = createSlice({
     name: 'room',
     initialState,
     reducers: {
-        getRooms: (state, action: PayloadAction<IRoom[]>) => {
-            state.roomList = action.payload;
-        },
         addRoom: (state, { payload }: PayloadAction<IRoom>) => {
             if (payload) {
-                state.roomList.push(payload);
+                state.roomList = [...state.roomList, payload];
             }
-        },
-        setRoom: (state, { payload }: PayloadAction<IRoom>) => {
-            state.room = payload;
         },
         updateRoom: (state, { payload }: PayloadAction<IRoom>) => {
             state.roomList = state.roomList.map(room => {
@@ -90,7 +144,7 @@ export const roomSlice = createSlice({
                     ...state.room,
                     participants: state.room.participants.map(p => {
                         if (p._id === userId) {
-                            return { ...p, status, last_seen };
+                            return { ...p, status, last_seen:last_seen || p.last_seen };
                         } else {
                             return p;
                         }
@@ -128,27 +182,63 @@ export const roomSlice = createSlice({
             state.isError = true;
         });
 
-        // create private room
-        builder.addCase(createPrivateRoom.pending, (state) =>  {
+        // create room
+        builder.addCase(createRoom.pending, (state) =>  {
             state.isLoading = true;
             state.isError = false;
         });
 
-        builder.addCase(createPrivateRoom.fulfilled, (state, action: PayloadAction<IRoom>) => {
-            const payload = action.payload as IRoom;
-            if (payload) {
-                state.roomList.push(payload)
-            }
+        builder.addCase(createRoom.fulfilled, (state) => {
             state.isError = false;
             state.isLoading = false;
         });
 
-        builder.addCase(createPrivateRoom.rejected, (state) => {
+        builder.addCase(createRoom.rejected, (state) => {
             state.isLoading = false;
             state.isError = true;
         });
+
+        // get rooms
+        builder.addCase(getRooms.pending, (state) =>  {
+            state.isLoading = true;
+            state.isError = false;
+        });
+
+        builder.addCase(getRooms.fulfilled, (state, action: PayloadAction<IRoom[]>) => {
+            state.roomList = action.payload;
+            state.isError = false;
+            state.isLoading = false;
+        });
+
+        builder.addCase(getRooms.rejected, (state) => {
+            state.isLoading = false;
+            state.isError = true;
+        });
+
+        // invite to group room
+        builder.addCase(inviteToGroupRoom.pending, (state) =>  {
+            state.isLoading = true;
+            state.isError = false;
+        });
+
+        builder.addCase(inviteToGroupRoom.fulfilled, (state) => {
+            state.isError = false;
+            state.isLoading = false;
+        });
+
+        builder.addCase(inviteToGroupRoom.rejected, (state) => {
+            state.isLoading = false;
+            state.isError = true;
+        });
+
     }
 })
 
 export default roomSlice.reducer;
-export const { getRooms, updateRoom, updateStatusInRooms, updateStatusInRoom, setRoom } = roomSlice.actions;
+
+export const { 
+    updateRoom,
+    updateStatusInRooms,
+    addRoom,
+    updateStatusInRoom
+} = roomSlice.actions;

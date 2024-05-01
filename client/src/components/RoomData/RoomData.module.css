@@ -1,0 +1,71 @@
+.room-data {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.heading {
+    margin-bottom: 10px;
+}
+
+.participants {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.controls button {
+    margin-left: 10px;
+}
+
+.tabs {
+    display: flex;
+    height: 400px;
+    margin: 0 auto;
+    border-top: 1px solid var(--separator-color);
+}
+
+.users {
+    height: 100px;
+    overflow-y: scroll;
+}
+
+
+.tabs.images {
+    width: 90%;
+    flex-wrap: wrap;
+    overflow-y: scroll;
+    border-radius: 10px;
+}
+
+.tabs.files {
+    width: 80%;
+    flex-direction: column;
+}
+
+.tab {
+    max-height: 200px;
+}
+
+.tab img {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.tab.files {
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: var(--bg-main-color);
+    cursor: pointer;
+    color: var(--text-light-color);
+    border-radius: 10px;
+}

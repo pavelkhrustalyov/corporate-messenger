@@ -10,7 +10,7 @@ import { createMessage, getMessages, updateStatusInMessage } from '../../store/m
 import CreateMessageForm from '../../components/CreateMessage/CreateMessage';
 import socket from '../../utils/testSocket';
 import { IRoom } from '../../interfaces/IRoom';
-import { getRoomById, setRoom, updateRoom, updateStatusInRoom, updateStatusInRooms } from '../../store/roomSlice/roomSlice';
+import { getRoomById, updateRoom, updateStatusInRoom } from '../../store/roomSlice/roomSlice';
 
 type IRoomPageParams = {
     roomId: string;
@@ -18,7 +18,6 @@ type IRoomPageParams = {
 
 const RoomPage = () => {
     const { roomId } = useParams<IRoomPageParams>();
-    // const [socket, setSocket] = useState<Socket | null>(null);
     const dispatch = useDispatch<AppDispatch>();
     const [limit, setLimit] = useState(20);
     const container = useRef<HTMLDivElement>(null);
@@ -34,17 +33,13 @@ const RoomPage = () => {
     }, [roomId, dispatch])
 
     useEffect(() => {
-        if (!socket) return;
-        
         const handleOnline = (userId: string) => {
             dispatch(updateStatusInMessage({ userId, status: "Online" }));
-            dispatch(updateStatusInRooms({ userId, status: "Online" }));
             dispatch(updateStatusInRoom({ userId, roomId: room?._id, status: "Online", last_seen: Date.now() })); // а так нет
         };
     
         const handleOffline = (userId: string) => {
             dispatch(updateStatusInMessage({ userId, status: "Offline" }));
-            dispatch(updateStatusInRooms({ userId, status: "Offline" }));
             dispatch(updateStatusInRoom({ userId, roomId: room?._id, status: "Offline", last_seen: Date.now() }));
         };
     
@@ -55,11 +50,9 @@ const RoomPage = () => {
             socket.off("online", handleOnline);
             socket.off("offline", handleOffline);
         };
-    }, [socket, room]);
-        
-    useEffect(() => {
-        if (!socket) return;
+    }, [room]);
 
+    useEffect(() => {
         socket.on("message", (message: IMessage) => {
             dispatch(createMessage(message));
             setTimeout(ScrollToBottom, 0);
@@ -72,10 +65,9 @@ const RoomPage = () => {
         return () => {
             socket.off("message");
             socket.off("update-room");
-            socket.off("online");
-            socket.off("offline");
+            socket.off("create-room");
         };
-    }, [socket])
+    }, [])
 
     useEffect(() => {
         if (roomId && socket) {
@@ -86,7 +78,7 @@ const RoomPage = () => {
             socket.off('join-room');
             socket.emit("leave-room", roomId);
         };
-    }, [socket, roomId]);
+    }, [roomId]);
 
     useEffect(() => {
         ScrollToBottom();
@@ -102,7 +94,7 @@ const RoomPage = () => {
         <div className={styles['room-page']}>
             <RoomHeader 
                 room={room} 
-                messages={messages} 
+                messages={messages && messages} 
             />
             <MessageList 
                 ref={container} 

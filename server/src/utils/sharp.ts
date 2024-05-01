@@ -30,7 +30,7 @@ export const resizeImageForMessage = async (req: Request, res: Response, next: N
             const avatarsFolderPath = path.join(__dirname, '../public/message_images');
 
             await sharp(req.file.buffer)
-                .resize(400, 400, { fit: "inside", withoutEnlargement: true })
+                .resize(400, 400, { fit: "cover", withoutEnlargement: true })
                 .toFormat('jpeg')
                 .jpeg({ quality: 100 })
                 .toFile(`${avatarsFolderPath}/${req.file.filename}`);

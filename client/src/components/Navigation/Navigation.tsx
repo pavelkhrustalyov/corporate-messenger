@@ -96,7 +96,7 @@ const Navigation = () => {
 
             {/* modals */}
 
-            <Modal isOpen={isOpenProfile} onClose={() => dispatch(closeProfileModal())}>
+            <Modal className={styles['profile-modal']} isOpen={isOpenProfile} onClose={() => dispatch(closeProfileModal())}>
                 { userIdFromModal && <Profile userId={userIdFromModal} /> }
             </Modal>
 

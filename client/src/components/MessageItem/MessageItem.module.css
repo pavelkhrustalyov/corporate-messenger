@@ -1,8 +1,8 @@
 .message-item {
-   position: relative;
+   margin-left: 20px;
    display: flex;
    align-items: end;
-   margin-bottom: 50px;
+   margin-bottom: 10px;
    justify-content: center;
 }
 
@@ -13,6 +13,7 @@
     color: var(--text-dark-color);
     background: var(--message-recipient-color);
     max-width: 500px;
+    min-width: 100px;
     border-radius: 10px 10px 10px 0px;
     word-wrap: break-word;
 }
@@ -27,16 +28,24 @@
 }
 
 .message-item.my {
-    padding-right: 30px;
+    margin-left: 0;
+    margin-right: 20px;
     margin-left: auto;
 }
 
+.message-text {
+    margin-bottom: 5px;
+}
 
 .message-item.my .message-data {
     padding-right: 10px;
     background: var(--bg-main-color);
     color: var(--text-light-color);
     border-radius: 10px 10px 0px 10px;
+}
+
+.message-item.my .date {
+    color: var(--icon-color)
 }
 
 .message-item.my .file {
@@ -60,15 +69,14 @@
 }
 
 .date {
-    position: absolute;
-    bottom: -25px;
-    right: 10px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
     font-size: 12px;
     color: var(--date-color);
 }
 
 .readed  {
-    position: absolute;
     bottom: -9px;
     right: 33px;
     font-size: 20px;
@@ -108,3 +116,9 @@
     font-size: 30px;
 }
 
+.readed {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    color: var(--border-color);
+}

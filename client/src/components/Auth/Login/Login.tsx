@@ -29,7 +29,7 @@ const Login = () => {
 
     useEffect(() => {
         if (user) {
-            socket.emit("user-online", { userId: user._id });
+            socket.emit('user-online', { userId: user?._id });
             navigate('/');
         }
     }, [navigate, user])

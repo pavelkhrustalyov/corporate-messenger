@@ -20,9 +20,12 @@
     color: var(--text-dark-color);
 }
 
+.heading {
+    margin-right: 20px;
+}
+
 .room-list__utils {
     display: flex;
-    align-items: center;
     padding: 15px;
     border-bottom: 1px solid var(--separate-color);
 }
@@ -31,23 +34,25 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px;
-    border-radius: 10px;
 }
 
 .tab {
-    padding: 8px;
     cursor: pointer;
-    border-radius: 10px;
-    margin-right: 5px;
-    color: var(--text-light-color);
-    background-color: var(--bg-main-color);
-    border-right: 5px solid transparent;
+    padding: 8px;
+    line-height: 0;
+    font-size: 35px;
+    margin-right: 10px;
+    color: var(--bg-main-color);
+    border-radius: 100%;
+    transition: 0.2s linear;
 }
 
 .tab.active {
     background-color: var(--active-tab);
-    border-right: 5px solid var(--active-border);
+}
+
+.tab:hover {
+    background-color: var(--active-tab);
 }
 
 .loader {

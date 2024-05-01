@@ -1,10 +1,13 @@
 import styles from './CreateRoom.module.css';
 import UserList from '../UserList/UserList';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Button from '../UI/Button/Button';
 import Headling from '../Headling/Headling';
 import { ToastContainer, toast } from 'react-toastify';
 import Input from '../UI/Input/Input';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../store/store';
+import { createRoom } from '../../store/roomSlice/roomSlice';
 
 interface IPropsCreateRoom {
     typeRoom: "private" | "group"
@@ -14,6 +17,7 @@ const CreateRoom = ({ typeRoom }: IPropsCreateRoom) => {
     const [isOpenSearch, setIsOpenSearch] = useState<boolean>(false);
     const [ userIds, setUserIds ] = useState<string[]>([]);
     const [ title, setTitle ] = useState<string>('');
+    const dispatch = useDispatch<AppDispatch>();
     
     const addUserToRoom = (userId: string) => {
         const existId = userIds.find(id => id === userId);
@@ -27,33 +31,30 @@ const CreateRoom = ({ typeRoom }: IPropsCreateRoom) => {
     };
 
     const createChat = () => {
-        let data:  any;
-
         if (typeRoom === "group") {
-
-            if (!title.length) {
+            if (!title.trim().length) {
                 toast.error("Имя группы не может быть пустым")
                 return;
             }
 
-            data = {
+            const data = {
                 title: title.trim(),
                 type: typeRoom,
                 users: userIds
             }
-        }
-        if (typeRoom === "private") {
+            dispatch(createRoom(data));
+        } else {
             if (userIds.length > 1) {
                 toast.error("Максимальное кол-во участников приватного чата - 1");
                 return;
             }
-            data = {
+            const data = {
                 type: typeRoom,
                 users: userIds
             }
-        }
 
-        console.log(data);
+            dispatch(createRoom(data));
+        }
     }
 
     return (
@@ -68,7 +69,7 @@ const CreateRoom = ({ typeRoom }: IPropsCreateRoom) => {
 
             { isOpenSearch && (
                 <div className={styles.controllers}>
-                    <UserList addUserToRoom={addUserToRoom} />
+                    <UserList userIds={userIds} addUserToRoom={addUserToRoom} />
                     {
                         typeRoom === "group" && (
                             <Input

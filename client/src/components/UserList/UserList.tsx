@@ -7,7 +7,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
 import { searchUsers } from '../../store/userSlice/userSlice';
 
-const UserList = ({ addUserToRoom }: { addUserToRoom?: (userId: string) => void }) => {
+interface IProps {
+    deleteUser?: (userId: string) => void;
+    userIds?: string[];
+    addUserToRoom?: (userId: string) => void;
+}
+
+const UserList = ({ addUserToRoom, userIds, deleteUser }: IProps) => {
 
     const [search, setSearch] = useState('');
     const dispatch = useDispatch<AppDispatch>();
@@ -40,7 +46,7 @@ const UserList = ({ addUserToRoom }: { addUserToRoom?: (userId: string) => void 
             />
             
             <ul className={cn(styles['user-list'])}>
-                { users && users.map(user => <UserItem addUserToRoom={addUserToRoom} key={user._id} user={user} />) }
+                { users && users.map(user => <UserItem deleteUser={deleteUser} userIds={userIds} addUserToRoom={addUserToRoom} key={user._id} user={user} />) }
             </ul>
         </div>
     );

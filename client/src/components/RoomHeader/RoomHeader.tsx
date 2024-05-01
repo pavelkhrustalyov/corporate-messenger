@@ -16,6 +16,10 @@ import {
  } from '../../store/modalSlice/modalSlice';
 
 import { IRoom } from '../../interfaces/IRoom';
+import RoomData from '../RoomData/RoomData';
+import Headling from '../Headling/Headling';
+import UserList from '../UserList/UserList';
+import InviteToGroup from '../InviteToGroup/InviteToGroup';
 
 interface IPropsRoomHeader {
     messages: IMessage[]; 
@@ -29,10 +33,14 @@ const RoomHeader = ({ messages, room }: IPropsRoomHeader) => {
 
     const interlocutor = room?.participants.find(p => p._id !== user?._id);
 
-    const messagesFiles = messages.filter(message => message.messageType === 'file');
-    const messagesImage = messages.filter(message => message.messageType === 'image');
-    const imageList = messagesImage.map(image => image.content?.filename);
-    const fileList = messagesFiles.map(image => image.content?.filename);
+    const files = messages
+        .filter(message => message.messageType === 'file')
+        .map(file => file.content?.filename);
+    const images = messages
+        .filter(message => message.messageType === 'image')
+        .map(image => image.content?.filename);
+
+    const propsData = { roomId: room?._id, images, files, participants: room?.participants };
 
     return (
         <div className={styles['room-header']}>
@@ -89,26 +97,19 @@ const RoomHeader = ({ messages, room }: IPropsRoomHeader) => {
                 room?.type === "private" ? (
                     <>
                         <Modal isOpen={isOpenRoomData} onClose={() => dispatch(closeRoomDataModal())}>
-                            данные о комнате
-                            
-                            Количество файлов: { fileList.length }
-                            Количество Изображений: { imageList.length }
+                            <RoomData {...propsData} />
                         </Modal>
                     </>
-                    
                 ) : (
                     <>
                         <Modal isOpen={isOpenTitle} onClose={() => dispatch(closeTitleModal())}>
-                            данные о группе
-                            Количество файлов: { fileList.length }
-                            Количество Изображений: { imageList.length }
-                            участники: {room?.participants.length}
+                            <RoomData {...propsData} />
                         </Modal>
                         <Modal isOpen={isOpenRoomData} onClose={() => dispatch(closeRoomDataModal())}>
-                            Пригласить в комнату
+                            <Headling element="h3">Добавить пользователя в чат</Headling>
+                            { room && <InviteToGroup roomId={room._id} users={room?.participants} />}
                         </Modal>
                     </>
-                    
                 )
             }
         </div>

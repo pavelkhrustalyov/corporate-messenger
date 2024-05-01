@@ -7,6 +7,9 @@ export interface IRoomSchema extends Document {
     participants: Schema.Types.ObjectId[];
     lastMessage: string;
     imageGroup?: string;
+    archived: boolean;
+    archive: () => void;
+    unarchive: () => void;
 }
 
 const RoomSchema = new Schema<IRoomSchema>({
@@ -29,6 +32,10 @@ const RoomSchema = new Schema<IRoomSchema>({
         type: String,
         default: 'default-group.png'
     },
+    archived: {
+        type: Boolean,
+        default: false,
+    }
 }, {
     timestamps: true,
 });
@@ -42,5 +49,15 @@ RoomSchema.pre('save', function (next){
     next();
 })
 
+
+RoomSchema.methods.archive = async function() {
+    this.archived = true;
+    await this.save();
+}
+
+RoomSchema.methods.unarchive = async function() {
+    this.archived = false;
+    await this.save();
+}
 
 export default mongoose.model<IRoomSchema>("Room", RoomSchema);
