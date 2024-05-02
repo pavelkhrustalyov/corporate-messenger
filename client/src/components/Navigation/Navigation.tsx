@@ -1,5 +1,4 @@
 // import Avatar from '../Avatar/Avatar';
-import { useState } from 'react';
 import Profile from '../Profile/Profile';
 import styles from './Navigation.module.css';
 import Modal from '../Modal/Modal';
@@ -19,7 +18,6 @@ import {
     openPrivateChatModal, 
     openProfileModal, 
     openSettingsModal, 
-    openUsersModal, 
     openVideoChatModal } from '../../store/modalSlice/modalSlice';
 
 import {
@@ -29,8 +27,6 @@ import {
     closePrivateChatModal,
     closeVideoChatModal
 } from '../../store/modalSlice/modalSlice';
-import Form from '../Form/Form';
-import Input from '../UI/Input/Input';
 import CreateRoom from '../CreatePrivateRoom/CreateRoom';
 
 
@@ -100,7 +96,7 @@ const Navigation = () => {
                 { userIdFromModal && <Profile userId={userIdFromModal} /> }
             </Modal>
 
-            <Modal isOpen={isOpenGroupChat} 
+            <Modal isOpen={isOpenGroupChat}
                 onClose={() => dispatch(closeGroupChatModal())}>
                 <CreateRoom typeRoom='group'/>
             </Modal>

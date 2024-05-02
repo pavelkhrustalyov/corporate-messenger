@@ -22,6 +22,6 @@ router.post('/unarchive/:roomId', authMiddleware, unarchive);
 
 router.get('/:roomId', authMiddleware, getRoomById);
 router.post('/create-room', authMiddleware, createRoom);
-router.delete('/delete/:roomId', authMiddleware, leaveRoom);
+router.delete('/leave/:roomId', authMiddleware, leaveRoom);
 
 export default router;

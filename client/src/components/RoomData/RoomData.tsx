@@ -8,16 +8,16 @@ import UserItem from '../UserItem/UserItem';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store/store';
 import { kickOutOfGroup } from '../../store/roomSlice/roomSlice';
+import { IRoom } from '../../interfaces/IRoom';
 
 interface IPropsRoomData {
     files?: (string[] | undefined)[];
     images?: (string[] | undefined)[];
     participants: IUser[];
-    roomId: string;
+    room: IRoom;
 }
 
-const RoomData = ({ files, images, participants, roomId }: IPropsRoomData) => {
-
+const RoomData = ({ files, images, participants, room }: IPropsRoomData) => {
     const [activeTab, setActiveTab] = useState<string>('all');
     const [showUsers, setShowUsers] = useState<boolean>(false);
     const dispatch = useDispatch<AppDispatch>();
@@ -34,7 +34,11 @@ const RoomData = ({ files, images, participants, roomId }: IPropsRoomData) => {
     })
 
     const deleteUser = (userId: string) => {
-        dispatch(kickOutOfGroup({ userId, roomId }))
+        const user = participants.find(user => user._id === userId);
+
+        const confirm = window.confirm(`Вы хотите удалить ${user?.name} ${user?.name}`);
+        if (confirm)
+            dispatch(kickOutOfGroup({ userId, roomId: room._id }))
     };
 
     return (
@@ -83,7 +87,7 @@ const RoomData = ({ files, images, participants, roomId }: IPropsRoomData) => {
                 })
             }
 
-            <Button 
+            <Button
                 onClick={() => setShowUsers(prev => !prev)} 
                 color='primary'>
                     Участники чата
@@ -93,7 +97,7 @@ const RoomData = ({ files, images, participants, roomId }: IPropsRoomData) => {
                     <ul className={styles.users}>
                         {
                             participants?.map(user => (
-                                <UserItem userIds={userIds} deleteUser={deleteUser} key={user._id} user={user} />
+                                <UserItem room={room} userIds={userIds} deleteUser={deleteUser} key={user._id} user={user} />
                             ))
                         }
                     </ul>

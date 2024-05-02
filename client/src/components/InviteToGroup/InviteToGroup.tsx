@@ -30,6 +30,7 @@ const InviteToGroup = ({ roomId, users }: { roomId: string, users: IUser[] }) =>
     const addUserToRoom = () => {
         if (!userIds.length) return;
         dispatch(inviteToGroupRoom({ roomId, participants: userIds }));
+        toast.success('Пользователи успешно добавлены');
     };
 
     return (

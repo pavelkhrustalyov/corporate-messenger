@@ -9,6 +9,7 @@ export const getRooms = async (req: Request, res: Response, next: NextFunction) 
             participants: { $in: [req.user?._id] },
         })
         .populate({ path: 'participants', select: 'name surname avatar status last_seen' })
+        
         return res.status(200).json(rooms);
     } catch (error) {
         next(error);
@@ -20,7 +21,8 @@ export const getRoomById = async (req: Request, res: Response, next: NextFunctio
 
     try {
         const room = await Room.findById(roomId)
-        .populate({ path: 'participants', select: '_id name surname avatar status last_seen' });
+        .populate({ path: 'participants', select: '_id name surname avatar status last_seen' })
+        .populate({ path: 'creator', select: '_id name surname avatar status last_seen' });
 
         if (!room) {
             res.status(404);
@@ -121,6 +123,8 @@ export const leaveRoom = async (req: Request, res: Response, next: NextFunction)
             $pull: { participants: user?._id }
         });
 
+        io.emit('leave-group-room', { room });
+
         return res.status(200).json({ message: "Вы вышли из чата" })
 
     } catch (error) {
@@ -155,7 +159,7 @@ export const inviteToGroupRoom = async (req: Request, res: Response, next: NextF
         
         if (!Array.isArray(filteredInviteUsers) || filteredInviteUsers.length === 0) {
             res.status(400);
-            throw new Error('Некорректный формат участников');
+            throw new Error('Некорректный формат участников')
         }
 
         const result = await room.updateOne({ 
@@ -170,8 +174,9 @@ export const inviteToGroupRoom = async (req: Request, res: Response, next: NextF
         const updatedRoom = await Room.findById(roomId);
 
         await updatedRoom?.populate({ path: 'participants', select: '_id name surname avatar status last_seen' });
+        await updatedRoom?.populate({ path: 'creator', select: '_id name surname avatar status last_seen' });
 
-        io.emit('update-room', updatedRoom);
+        io.emit('set-room', { room: updatedRoom });
 
         return res.status(201).json({ participants: filteredInviteUsers });
 
@@ -217,9 +222,10 @@ export const kickOutOfGroup = async (req: Request, res: Response, next: NextFunc
         })
 
         const updatedRoom = await Room.findById(roomId);
-        await updatedRoom?.populate({ path: 'participants', select: '_id name surname avatar status last_seen' });
+        await updatedRoom?.populate({ path: 'participants', select: '_id name surname avatar status last_seen' })
+        await updatedRoom?.populate({ path: 'creator', select: '_id name surname avatar status last_seen' })
 
-        io.emit('update-room', updatedRoom);
+        io.emit('set-room', { room: updatedRoom });
 
         res.status(201).json({ participants: updatedRoom?.participants });
 

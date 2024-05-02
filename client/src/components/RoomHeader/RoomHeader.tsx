@@ -18,8 +18,11 @@ import {
 import { IRoom } from '../../interfaces/IRoom';
 import RoomData from '../RoomData/RoomData';
 import Headling from '../Headling/Headling';
-import UserList from '../UserList/UserList';
 import InviteToGroup from '../InviteToGroup/InviteToGroup';
+import { useEffect } from 'react';
+import socket from '../../utils/testSocket';
+import { leaveRoom, setRoom, updateRoom } from '../../store/roomSlice/roomSlice';
+import { MdLogout } from "react-icons/md";
 
 interface IPropsRoomHeader {
     messages: IMessage[]; 
@@ -30,8 +33,25 @@ const RoomHeader = ({ messages, room }: IPropsRoomHeader) => {
     const dispatch = useDispatch<AppDispatch>();
     const { user } = useSelector((state: RootState) => state.auth);
     const { isOpenRoomData, isOpenTitle } = useSelector((state: RootState) => state.modal);
-
     const interlocutor = room?.participants.find(p => p._id !== user?._id);
+
+    useEffect(() => {
+        socket.on("leave-group-room", ({ room }: { room: IRoom }) => {
+            if (room) {
+                dispatch(setRoom(room));
+                dispatch(updateRoom(room));
+            }
+        });
+
+        socket.on("set-room", ({ room }: { room: IRoom }) => {
+            dispatch(setRoom(room));
+        });
+
+        return () => {
+            socket.off('leave-group-room');
+            socket.off('set-room');
+        }
+    }, []);
 
     const files = messages
         .filter(message => message.messageType === 'file')
@@ -40,7 +60,13 @@ const RoomHeader = ({ messages, room }: IPropsRoomHeader) => {
         .filter(message => message.messageType === 'image')
         .map(image => image.content?.filename);
 
-    const propsData = { roomId: room?._id, images, files, participants: room?.participants };
+    const propsData = { room, images, files, participants: room?.participants };
+
+    const leaveRoomHandler = (roomId: string) => {
+        const confirm = window.confirm('Вы хотите покинуть чат?');
+        if (confirm)
+            dispatch(leaveRoom(roomId));
+    };
 
     return (
         <div className={styles['room-header']}>
@@ -86,9 +112,21 @@ const RoomHeader = ({ messages, room }: IPropsRoomHeader) => {
                             </Button>
                         </>
                     ) : (
-                        <Button color="transparent" onClick={() => dispatch(openRoomDataModal())} >
-                            <FaCirclePlus className={styles.icon}/>
-                        </Button>
+                        <>
+                        {
+                            room?.creator?._id === user?._id &&  
+                            <Button color="transparent" onClick={() => dispatch(openRoomDataModal())} >
+                                <FaCirclePlus className={styles.icon}/>
+                            </Button>
+                        }
+                        {
+                            room && <Button
+                                color="transparent" 
+                                onClick={() => leaveRoomHandler(room._id)} >
+                                <MdLogout className={styles.icon}/>
+                            </Button>
+                        }
+                        </>
                     )
                 }
             </div>

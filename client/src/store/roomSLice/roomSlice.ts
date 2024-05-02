@@ -2,7 +2,8 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IRoom } from '../../interfaces/IRoom';
 import axios, { AxiosError } from 'axios';
 import { AppDispatch } from '../store';
-import { closeGroupChatModal, closePrivateChatModal } from '../modalSlice/modalSlice';
+import { closeGroupChatModal, closePrivateChatModal, closeRoomDataModal, closeTitleModal } from '../modalSlice/modalSlice';
+import { toast } from 'react-toastify';
 
 const BASE_URL = '/api/room';
 
@@ -34,7 +35,9 @@ export const getRoomById = createAsyncThunk(
             return responce.data;
         } catch (error) {
             if (error instanceof AxiosError) {
-                console.log(error.response?.data.message)
+                toast.error(error.response?.data.message);
+            } else {
+                console.log(error);
             }
         }
     },
@@ -55,7 +58,7 @@ export const createRoom = createAsyncThunk<IRoom, IRoomCreateData>(
 
         } catch (error) {
             if (error instanceof AxiosError) {
-                console.log(error.response?.data.message);
+                toast.error(error.response?.data.message);
             } else {
                 console.log(error);
             }
@@ -71,7 +74,7 @@ export const getRooms = createAsyncThunk<IRoom[]>(
             return responce.data;
         } catch (error) {
             if (error instanceof AxiosError) {
-                console.log(error.response?.data.message);
+                toast.error(error.response?.data.message);
             } else {
                 console.log(error);
             }
@@ -81,13 +84,16 @@ export const getRooms = createAsyncThunk<IRoom[]>(
 
 export const inviteToGroupRoom = createAsyncThunk(
     'rooms/inviteToGroupRoom',
-    async (data: { roomId: string, participants: string[] }) => {
+    async (data: { roomId: string, participants: string[] }, thunkAPI) => {
+        const dispatch = thunkAPI.dispatch as AppDispatch;
+
         try {
             const responce = await axios.patch(`${BASE_URL}/invite`, data);
+            dispatch(closeRoomDataModal());
             return responce.data;
         } catch (error) {
             if (error instanceof AxiosError) {
-                console.log(error.response?.data.message);
+                toast.error(error.response?.data.message);
             } else {
                 console.log(error);
             }
@@ -103,7 +109,23 @@ export const kickOutOfGroup = createAsyncThunk(
             return responce.data;
         } catch (error) {
             if (error instanceof AxiosError) {
-                console.log(error.response?.data.message);
+                toast.error(error.response?.data.message);
+            } else {
+                console.log(error);
+            }
+        }
+    }
+)
+
+export const leaveRoom = createAsyncThunk(
+    'rooms/leaveRoom',
+    async (roomId: string) => {
+        try {
+            const responce = await axios.delete(`${BASE_URL}/leave/${roomId}`);
+            return responce.data;
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                toast.error(error.response?.data.message);
             } else {
                 console.log(error);
             }
@@ -137,6 +159,11 @@ export const roomSlice = createSlice({
                 return room;
             })
         },
+
+        setRoom: (state, action: PayloadAction<IRoom>) => {
+            state.room = action.payload;
+        },
+
         updateStatusInRoom: (state, { payload }: IStatusPayload) => {
             const { userId, roomId, status, last_seen } = payload;
             if (state.room && state.room._id === roomId) {
@@ -230,7 +257,6 @@ export const roomSlice = createSlice({
             state.isLoading = false;
             state.isError = true;
         });
-
     }
 })
 
@@ -240,5 +266,6 @@ export const {
     updateRoom,
     updateStatusInRooms,
     addRoom,
-    updateStatusInRoom
+    updateStatusInRoom,
+    setRoom
 } = roomSlice.actions;
