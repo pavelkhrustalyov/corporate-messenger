@@ -80,7 +80,8 @@ export const createMessage = async (req: Request, res: Response, next: NextFunct
         const lastMessage = req.file ? req.file.filename : text;
 
         await room.updateOne({
-            $set: { lastMessage }
+            $set: { lastMessage },
+            $push: { messages: message }
         });
 
         await message.populate(
@@ -89,14 +90,56 @@ export const createMessage = async (req: Request, res: Response, next: NextFunct
 
         const updatedRoom = await Room.findById(room._id)
         await updatedRoom?.populate({ path: 'participants', select: 'name surname avatar status last_seen' })
+        await updatedRoom?.populate({ path: 'messages', select: 'senderId isRead' });
 
         await message.save();
-        
-        io.to(roomId).emit('message', message);
+
+        io.to(roomId).emit('message', {
+            message,
+            roomId,
+        });
+
         io.emit('update-room', { room: updatedRoom });
         
         return res.status(201).json(message);
         
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const readMessages = async (req: Request, res: Response, next: NextFunction) => {
+    const { roomId } = req.params;
+    try {
+        const room = await Room.findById(roomId);
+
+        if (!room) {
+            res.status(404);
+            throw new Error('Чат не найден!');
+        }
+
+        await Message.updateMany(
+            { roomId, senderId: { $ne: req.user?._id }, isRead: false },
+            { isRead: true }
+        );
+        
+        const updatedMessages = await Message.find({ roomId })
+            .populate({ path: 'senderId', select: 'name surname avatar status' })
+            .sort({ createdAt: -1 })
+            .limit(30);
+
+        const updatedRoom = await Room.findById(roomId)
+            .populate({ path: 'participants', select: '_id name surname avatar status last_seen' })
+            .populate({ path: 'creator', select: '_id name surname avatar status last_seen' })
+            .populate({ path: 'messages', select: 'senderId isRead' });
+
+        io.to(roomId).emit('read-messages', {
+            messages: updatedMessages,
+            room: updatedRoom,
+            userId: req.user?._id
+        });
+
+        return res.status(200).json(updatedMessages);
     } catch (error) {
         next(error);
     }

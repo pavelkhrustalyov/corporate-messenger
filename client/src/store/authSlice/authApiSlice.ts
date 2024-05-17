@@ -1,6 +1,6 @@
 import { IUser } from "../../interfaces/IUser";
+import { positionTypes } from "../../types/types";
 import { apiSlice } from "../apiSlice";
-
 const BASE_URL = '/api/auth';
 
 interface LoginRequest {
@@ -12,6 +12,9 @@ interface RegisterRequest extends LoginRequest {
     name: string;
     surname: string;
     patronymic: string;
+    phone: string;
+    position: positionTypes;
+    dateOfBirthday: Date | '';
 }
 
 export const authApiSlice = apiSlice.injectEndpoints({

@@ -1,5 +1,4 @@
-export type positionTypes = 'Security Specialist' | 'Systems Analyst' | 'QA Engineer' |
-'Product Manager' | 'DevOps Engineer' | 'Backend Developer' | 'Frontend Developer' | 'UX/UI Designer';
+import { positionTypes } from "../types/types";
 
 export interface IUser {
     _id: string;

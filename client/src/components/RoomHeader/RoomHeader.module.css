@@ -48,10 +48,8 @@
     margin-right: 15px;
 }
 
-
-
 .title {
-    color: var(--text-dark-color);
+    color: var(--text-support-color);
     cursor: pointer;
 }
 
@@ -64,5 +62,6 @@
 }
 
 .icon {
-    color: var(--bg-main-color);
+    color: var(--icon-color);
+    color: var(--text-main-color);
 }

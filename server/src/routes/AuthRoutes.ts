@@ -15,6 +15,8 @@ router.post('/login', [
 router.post('/register', [
     check('email', 'Пожалуйста, введите корректный Email').isEmail().normalizeEmail(),
     check('password', 'Пароль обязателен. Минимум 6 символов').isLength({ min: 6 }).trim(),
+    check('dateOfBirthday', 'Дата рождения обязательна').isDate(),
+    check('phone', 'Номер телефона обязателен').isNumeric(),
     check('name', 'Имя обязательно').not().isEmpty().trim(),
     check('surname', 'Фамилия обязательна').not().isEmpty().trim(),
     check('patronymic', 'Отчество обязателно').not().isEmpty().trim(),

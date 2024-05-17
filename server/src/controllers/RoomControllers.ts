@@ -9,6 +9,7 @@ export const getRooms = async (req: Request, res: Response, next: NextFunction) 
             participants: { $in: [req.user?._id] },
         })
         .populate({ path: 'participants', select: 'name surname avatar status last_seen' })
+        .populate({ path: 'messages', select: 'senderId isRead' });
         
         return res.status(200).json(rooms);
     } catch (error) {
@@ -22,7 +23,8 @@ export const getRoomById = async (req: Request, res: Response, next: NextFunctio
     try {
         const room = await Room.findById(roomId)
         .populate({ path: 'participants', select: '_id name surname avatar status last_seen' })
-        .populate({ path: 'creator', select: '_id name surname avatar status last_seen' });
+        .populate({ path: 'creator', select: '_id name surname avatar status last_seen' })
+        .populate({ path: 'messages', select: 'senderId isRead' });
 
         if (!room) {
             res.status(404);
@@ -123,7 +125,7 @@ export const leaveRoom = async (req: Request, res: Response, next: NextFunction)
             $pull: { participants: user?._id }
         });
 
-        io.emit('leave-group-room', { room });
+        io.emit('leave-group-room', { room, userId: user?._id });
 
         return res.status(200).json({ message: "Вы вышли из чата" })
 
@@ -176,7 +178,7 @@ export const inviteToGroupRoom = async (req: Request, res: Response, next: NextF
         await updatedRoom?.populate({ path: 'participants', select: '_id name surname avatar status last_seen' });
         await updatedRoom?.populate({ path: 'creator', select: '_id name surname avatar status last_seen' });
 
-        io.emit('set-room', { room: updatedRoom });
+        io.emit('invite-to-room', { room: updatedRoom, users: filteredInviteUsers });
 
         return res.status(201).json({ participants: filteredInviteUsers });
 
@@ -225,7 +227,7 @@ export const kickOutOfGroup = async (req: Request, res: Response, next: NextFunc
         await updatedRoom?.populate({ path: 'participants', select: '_id name surname avatar status last_seen' })
         await updatedRoom?.populate({ path: 'creator', select: '_id name surname avatar status last_seen' })
 
-        io.emit('set-room', { room: updatedRoom });
+        io.emit('kick-from-group', { room: updatedRoom, userId });
 
         res.status(201).json({ participants: updatedRoom?.participants });
 
@@ -237,7 +239,6 @@ export const kickOutOfGroup = async (req: Request, res: Response, next: NextFunc
 
 export const archive = async (req: Request, res: Response, next: NextFunction) => {
     const { roomId } = req.params;
-    console.log(roomId)
 
     try {
         const room = await Room.findById(roomId);
@@ -247,8 +248,10 @@ export const archive = async (req: Request, res: Response, next: NextFunction) =
         throw new Error('Чат не найден');
     }
 
-    await room.archive();
-    return res.status(201).json(room);
+    await room.archive(req.user?._id);
+
+    const updatedRoom = await Room.findById(roomId);
+    return res.status(201).json(updatedRoom);
 
     } catch (error) {
         next(error);
@@ -266,8 +269,12 @@ export const unarchive = async (req: Request, res: Response, next: NextFunction)
         throw new Error('Чат не найден');
     }
 
-    await room.unarchive();
-    return res.status(201).json(room);
+    await room.updateOne({
+        $pull: { archivedUsers: req.user?.id }
+    })
+
+    const updatedRoom = await Room.findById(roomId);
+    return res.status(201).json(updatedRoom);
 
     } catch (error) {
         next(error);

@@ -16,7 +16,7 @@ const Input = forwardRef<HTMLInputElement, IInputProps>(({ className, ...props }
                             {...props}
                         />
                         <label htmlFor="file">
-                            <img className={styles.file} src="file.svg" alt="Smile" />
+                            <img className={styles.file} src="../file.svg" alt="Smile" />
                         </label>
                     </div>
                 ) : (

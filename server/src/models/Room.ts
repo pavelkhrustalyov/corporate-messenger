@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { IMessageSchema } from "./Message";
 
 export interface IRoomSchema extends Document {
     creator?: Schema.Types.ObjectId;
@@ -7,9 +8,10 @@ export interface IRoomSchema extends Document {
     participants: Schema.Types.ObjectId[];
     lastMessage: string;
     imageGroup?: string;
-    archived: boolean;
-    archive: () => void;
-    unarchive: () => void;
+    messages: IMessageSchema[];
+    archivedUsers: Schema.Types.ObjectId[];
+    archive: (userId: string) => void;
+    unarchive: (userId: string) => void;
 }
 
 const RoomSchema = new Schema<IRoomSchema>({
@@ -30,18 +32,26 @@ const RoomSchema = new Schema<IRoomSchema>({
     lastMessage: String,
     imageGroup: {
         type: String,
-        default: 'default-group.png'
+        default: "default-group.png"
     },
-    archived: {
-        type: Boolean,
-        default: false,
-    }
+    messages: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Message"
+        }
+    ],
+    archivedUsers: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "User"
+        }
+    ],
 }, {
     timestamps: true,
 });
 
 RoomSchema.pre('save', function (next){
-    if (this.type === 'private') {
+    if (this.type === "private") {
         this.title = undefined;
         this.creator = undefined;
         this.imageGroup = undefined;
@@ -50,13 +60,13 @@ RoomSchema.pre('save', function (next){
 })
 
 
-RoomSchema.methods.archive = async function() {
-    this.archived = true;
+RoomSchema.methods.archive = async function(userId: string) {
+    this.archivedUsers.push(userId);
     await this.save();
 }
 
-RoomSchema.methods.unarchive = async function() {
-    this.archived = false;
+RoomSchema.methods.unarchive = async function(userId: string) {
+    this.archivedUsers = this.archivedUsers.filter((id: string) => id !== userId);
     await this.save();
 }
 

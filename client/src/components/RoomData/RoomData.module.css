@@ -2,7 +2,12 @@
     width: 100%;
     display: flex;
     flex-direction: column;
+}
+
+.room-data-head {
+    display: flex;
     align-items: center;
+    margin-bottom: 25px;
 }
 
 .heading {
@@ -15,32 +20,56 @@
     align-items: center;
 }
 
+.title {
+    margin-left: 10px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: var(--icon-color)
+}
 
 .controls {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     margin-bottom: 20px;
 }
 
-.controls button {
-    margin-left: 10px;
+.control {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: var(--text-dark-color);
+}
+
+.control-icon {
+    margin-right: 20px;
+    font-size: 25px;
+    color: var(--icon-color);
+}
+
+.control-text {
+    color: var(--text-support-color);
+    font-weight: bold;
 }
 
 .tabs {
     display: flex;
-    height: 400px;
     margin: 0 auto;
     border-top: 1px solid var(--separator-color);
 }
 
 .users {
-    height: 100px;
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    height: 200px;
     overflow-y: scroll;
 }
 
-
 .tabs.images {
-    width: 90%;
+    display: flex;
+    justify-content: center;
     flex-wrap: wrap;
     overflow-y: scroll;
     border-radius: 10px;
@@ -51,14 +80,8 @@
     flex-direction: column;
 }
 
-.tab {
-    max-height: 200px;
-}
-
 .tab img {
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
+    height: 100px;
 }
 
 .tab.files {
@@ -69,3 +92,14 @@
     color: var(--text-light-color);
     border-radius: 10px;
 }
+
+.heading {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.participants-heading {
+    text-align: center;
+    margin-bottom: 10px;
+}
+

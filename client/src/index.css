@@ -10,28 +10,6 @@ body {
 }
 
 :root {
-    /* -- DARK THEME */
-    --bg-main-color: #18212c;
-    --bg-support-color: #0f1621;
-    --main-hover: #1e2a35;
-    --ui-main-color: #2a5278;
-    --ui-danger-color: tomato;
-    --online-color: lightgreen;
-    --offline-color: tomato;
-    --text-main-color: white;
-    --text-support-color: rgba(108, 127, 147);
-    --icon-color: #575f71;
-    --message-self-color: #2a5278;
-    --message-recipient-color: #182533;
-    --date-color: #ccc;
-    --group-sender-color: #90ee8f;
-    --separate-color: black;
-    --form-wrap-color: #575f71;
-    --placeholder-color: #999;
-    --link-color: rgb(62, 62, 188); 
-    --status-border-color: white;
-   
-
     /* -- LIGHT THEME */
     --bg-base-color: #EFF6FC;
     --bg-main-color: #6E00FF;
@@ -58,4 +36,6 @@ body {
     --link-color: #3e3ebc;
     --status-border-color: white;
     --box-shadow: rgb(195,227,247);
+    --text-main-color: #000;
+    --loader-color: #6E00FF;
 }

@@ -4,9 +4,9 @@
     overflow-y: scroll;
     background-color: var(--bg-support-color);
     border-radius: 10px;
-    -webkit-box-shadow: 0px -1px 8px 0px rgb(195,227,247);
-    -moz-box-shadow: 0px -1px 8px 0px rgb(195,227,247);
-    box-shadow: 0px -1px 8px 0px rgb(195,227,247);
+    -webkit-box-shadow: 0px -1px 8px 0px var(--box-shadow);
+    -moz-box-shadow: 0px -1px 8px 0px var(--box-shadow);
+    box-shadow: 0px -1px 8px 0px var(--box-shadow);
 }
 
 .room-empty {
@@ -36,11 +36,15 @@
     justify-content: space-between;
 }
 
+.icon {
+    color: var(--text-support-color);
+}
+
 .tab {
     cursor: pointer;
     padding: 8px;
     line-height: 0;
-    font-size: 35px;
+    font-size: 20px;
     margin-right: 10px;
     color: var(--bg-main-color);
     border-radius: 100%;

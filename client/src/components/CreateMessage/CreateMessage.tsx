@@ -10,8 +10,8 @@ import { FaPencil } from "react-icons/fa6";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useCreateMessageMutation } from '../../store/messageSlice/messageApiSlice';
 import { IPropsCreateMessage } from './IPropsCreateMessage';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store/store';
 import { typingData } from '../../types/types';
 import socket from '../../utils/testSocket';
 
@@ -24,6 +24,7 @@ const CreateMessageForm = ({ roomId }: IPropsCreateMessage) => {
     const [dataTyping, setDataTyping] = useState<typingData>();
     const [ isOpenEmoji, setIsOpenEmoji ] = useState(false);
     const { user } = useSelector((state: RootState) => state.auth)
+    const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
         if (roomId && socket) {
@@ -86,6 +87,7 @@ const CreateMessageForm = ({ roomId }: IPropsCreateMessage) => {
                 await createMessageQuery(formData).unwrap(); // здесь поправить ошибку типизации
                 setCurrentFile(undefined);
                 setText('');
+
             } catch (error) {
                 if (error && error.data) {
                     toast.error(error.data.message)
@@ -112,7 +114,7 @@ const CreateMessageForm = ({ roomId }: IPropsCreateMessage) => {
                         color='transparent'
                         onMouseEnter={() => setIsOpenEmoji(true)}
                     >
-                        <img className={styles.smile} src="smiles.svg" alt="Smile" />
+                        <img className={styles.smile} src="../smiles.svg" alt="Smile" />
                     </Button>
                     <ToastContainer />
                     <Input
@@ -131,7 +133,7 @@ const CreateMessageForm = ({ roomId }: IPropsCreateMessage) => {
                     <Button
                         type='button'
                         color='primary'>
-                        <img className={styles.micro} src="micro.svg" alt="записать голосовое"
+                        <img className={styles.micro} src="../micro.svg" alt="записать голосовое"
                     />
                     </Button>
                 </div>               

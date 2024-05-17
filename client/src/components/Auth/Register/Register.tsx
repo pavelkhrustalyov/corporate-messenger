@@ -2,30 +2,56 @@ import { ChangeEvent, FormEvent, useState } from 'react';
 import Button from '../../UI/Button/Button';
 import Input from '../../UI/Input/Input';
 import styles from '../Auth.module.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useRegisterMutation } from '../../../store/authSlice/authApiSlice';
+import { toast, ToastContainer } from 'react-toastify';
+import { AxiosError } from 'axios';
+import CustomSelect from '../../UI/CustomSelect/CustomSelect';
+import { positionTypes } from '../../../types/types';
 
-interface RegisterForm {
+export interface RegisterForm {
     name: string,
     surname: string,
     patronymic: string,
     email: string,
-    login: string,
     password: string,
+    phone: string,
+    dateOfBirthday: Date | '',
     confirmPassword: string,
-    date: string;
+    position: positionTypes;
 }
 
 const Register = () => {
+    const [ register, { isSuccess, isLoading } ] = useRegisterMutation();
+    const [selectPosition, setSelectPosition] = useState<positionTypes>("Security Specialist");
+
+    const [positions] = useState<positionTypes[]>([
+        'Security Specialist',
+        'Systems Analyst',
+        'QA Engineer',
+        'Product Manager',
+        'DevOps Engineer',
+        'Backend Developer',
+        'Frontend Developer',
+        'UX/UI Designer'
+    ]);
+
+    const selectHandler = (position: positionTypes) => {
+        setSelectPosition(position);
+    }
+
+    const navigate = useNavigate();
 
     const [ form, setForm ] = useState<RegisterForm>({
         name: '',
         surname: '',
         patronymic: '',
+        dateOfBirthday: '',
+        position: 'Security Specialist',
+        phone: '',
         email: '',
-        login: '',
         password: '',
         confirmPassword: '',
-        date: ''
     });
 
     const {
@@ -33,15 +59,37 @@ const Register = () => {
         surname, 
         patronymic, 
         email, 
-        login, 
         password, 
         confirmPassword,
-        date
+        dateOfBirthday,
+        phone
     } = form;
 
-    const registerForm = (e: FormEvent<HTMLFormElement>) => {
+    const registerForm = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(form);
+        if (password !== confirmPassword) {
+            toast.error("Пароли не совпадают!");
+            return;
+        }
+        setForm((prevForm) => ({ 
+            ...prevForm, 
+            dateOfBirthday: new Date(dateOfBirthday),
+            position: selectPosition
+        }));
+        try {
+            await register(form).unwrap();
+            navigate('/auth/login');
+            toast.success('Вы успешно зарегистрировались! Дождитесь подтверждения администратора');
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                toast.error(error.response?.data.message);
+            } else {
+                console.log(error.data.message)
+                toast.error("Ошибка сервера, попробуйте зайти позднее");
+            }
+        }
+
+       
     };
 
     const onChangeField = (e: ChangeEvent<HTMLInputElement>) => {
@@ -51,6 +99,7 @@ const Register = () => {
 
     return (
         <>
+            <ToastContainer />
             <h1 className={styles.heading}>Регистрация</h1>
             <form onSubmit={registerForm} className={styles.auth}>
                 <Input
@@ -74,13 +123,15 @@ const Register = () => {
 
                 <Input
                     required
-                    name="date"
-                    value={date}
+                    name="dateOfBirthday"
+                    value={dateOfBirthday}
                     onChange={onChangeField}
                     className={styles.field}
                     type="date"
                     placeholder="Дата рождения"
                 />
+
+                <CustomSelect selectHandler={selectHandler} data={positions} />
 
                 <Input
                     required
@@ -93,12 +144,12 @@ const Register = () => {
                 />
                 <Input
                     required
-                    name="login"
-                    value={login}
+                    name="phone"
+                    value={phone}
                     onChange={onChangeField}
                     className={styles.field}
-                    type="text"
-                    placeholder="Введите логин"
+                    type="number"
+                    placeholder="Введите номер телефона"
                 />
 
                 <Input

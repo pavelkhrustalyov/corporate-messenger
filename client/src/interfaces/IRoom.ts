@@ -1,3 +1,4 @@
+import { IMessage } from "./IMessage";
 import { IUser } from "./IUser";
 
 export interface IRoom {
@@ -11,5 +12,6 @@ export interface IRoom {
     lastMessage: string;
     createdAt: string;
     updatedAt: string;
-    archived: boolean;
+    archivedUsers: string[];
+    messages: IMessage[];
 }

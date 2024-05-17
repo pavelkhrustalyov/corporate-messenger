@@ -1,6 +1,10 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { IMessage } from '../../interfaces/IMessage';
 import axios, { AxiosError } from 'axios';
+import { toast } from 'react-toastify';
+
+
+const BASE_URL = '/api/messages';
 
 interface IInitialState {
     messages: IMessage[];
@@ -16,9 +20,9 @@ const initialState: IInitialState = {
 
 export const getMessages = createAsyncThunk(
     'messages/getMessageByRoomId',
-    async (data: { roomId: string, limit: number }) => {
+    async (data: { roomId: string, limit: number | null }) => {
         try {
-            const responce = await axios.get<IMessage[]>(`/api/messages/${data.roomId}?&limit=${data.limit}`);
+            const responce = await axios.get<IMessage[]>(`${BASE_URL}/${data.roomId}?&limit=${data.limit}`);
             return responce.data;
         } catch (error) {
             if (error instanceof AxiosError) {
@@ -27,6 +31,23 @@ export const getMessages = createAsyncThunk(
         }
     },
 )
+
+export const readMessages = createAsyncThunk(
+    'messages/readMessages',
+    async (roomId: string) => {
+        try {
+            const responce = await axios.patch<IMessage[]>(`${BASE_URL}/read-messages/${roomId}`);
+            return responce.data;
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                toast.error(error.response?.data.message)
+            } else {
+                console.log(error)
+            }
+        }
+    },
+)
+
 
 type PayloadStatusData = {
     status: 'Online' | 'Offline';
@@ -39,6 +60,17 @@ export const messageSlice = createSlice({
     reducers: {
         createMessage: (state, action: PayloadAction<IMessage>) => {
             state.messages = [...state.messages, action.payload];
+        },
+        updateMessages: (state, action: PayloadAction<IMessage[]>) => {
+            state.messages = action.payload;
+        },
+        updateMessage: (state, action: PayloadAction<IMessage>) => {
+            state.messages = state.messages.map(message => {
+                if (message._id === action.payload._id) {
+                    return { ...message, isRead: true }
+                }
+                return message;
+            })
         },
         updateStatusInMessage: (state, action: PayloadAction<PayloadStatusData>) => {
             state.messages = state.messages.map(message => {
@@ -67,8 +99,13 @@ export const messageSlice = createSlice({
             state.isLoading = false;
             state.isError = true;
         });
+
+        builder.addCase(readMessages.fulfilled, (state) => {
+            state.isError = false;
+            state.isLoading = false;
+        })
     }
 });
 
 export default messageSlice.reducer;
-export const { createMessage, updateStatusInMessage } = messageSlice.actions;
+export const { createMessage, updateStatusInMessage, updateMessages, updateMessage } = messageSlice.actions;

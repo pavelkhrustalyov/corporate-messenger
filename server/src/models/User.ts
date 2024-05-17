@@ -17,6 +17,7 @@ export interface IUserSchema extends Document {
     notifications: string[];
     isVerified: boolean;
     avatar: string | "default.png";
+    phone: string;
     role: 'user' | 'admin';
     last_seen: Date;
     matchPassword(enteredPassword: string): Promise<boolean>;
@@ -38,6 +39,10 @@ const UserSchema = new Schema<IUserSchema>({
     sex: {
         type: String,
         enum: ['male', 'female'],
+        required: true
+    },
+    phone: {
+        type: String,
         required: true
     },
     dateOfBirthday: {

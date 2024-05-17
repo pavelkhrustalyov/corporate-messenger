@@ -34,13 +34,13 @@ const UserItem = ({ user, addUserToRoom, userIds, deleteUser, room }: IPropsUser
                 className={styles["user-data"]}
                 onClick={() => dispatch(openProfileModal(user._id))}
             >
-                <Avatar className={styles.avatar} size='small' src={`/avatars/${user.avatar}`} />
+                <Avatar className={styles.avatar} size='middle' src={`/avatars/${user.avatar}`} />
                 <Headling
                     className={styles.title}
                 element="h3">
                     {user.name}&nbsp;{user.surname}
                 </Headling>
-                { user._id === room?.creator?._id && <span>(Админ)&nbsp;</span> }
+                { user._id === room?.creator?._id && <span className={styles.admin}>(Админ)&nbsp;</span> }
                 <span className={cn(styles.status, {
                     [styles['is-online']]: user.status === "Online"
                 })}></span>

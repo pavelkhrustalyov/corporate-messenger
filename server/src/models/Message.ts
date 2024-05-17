@@ -17,7 +17,7 @@ export interface IMessageSchema extends Document {
 const MessageSchema = new Schema<IMessageSchema>({
     roomId: {
         type: Schema.Types.ObjectId,
-        ref: "Chat"
+        ref: "Room"
     },
     senderId: {
         type: Schema.Types.ObjectId,

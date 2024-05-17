@@ -9,15 +9,13 @@ import cn from 'classnames';
 import Loader from '../Loader/Loader';
 import socket from '../../utils/testSocket';
 import { IRoom } from '../../interfaces/IRoom';
-// import io, { Socket } from 'socket.io-client';
-// import createSocket from '../../utils/socket';
 import { MdArchive, MdGroups, MdMailLock, MdListAlt } from "react-icons/md";
 
 const RoomList = () => {
     const { roomList, isLoading, isError } = useSelector((state: RootState) => state.rooms);
-    const [currentTab, setCurrentTab] = useState<string>("all");
+    const [ currentTab, setCurrentTab ] = useState<string>("all");
     const dispatch = useDispatch<AppDispatch>();
-    const [addedRooms, setAddedRooms] = useState<string[]>([]);
+    const [ addedRooms, setAddedRooms ] = useState<string[]>([]);
     const { user: currentUser } = useSelector((state: RootState) => state.auth);
 
     useEffect(() => {
@@ -44,26 +42,29 @@ const RoomList = () => {
         }
     }, []);
 
-
     const tabs = [
-        { name: "all", text: "Все", icon: <MdListAlt/>},
-        { name: "private", text: "Приватные", icon: <MdMailLock/> },
-        { name: "group", text: "Общие", icon: <MdGroups/> },
-        { name: "archive", text: "Архив", icon: <MdArchive/> }
+        { name: "all", text: "Все", icon: <MdListAlt className={styles.icon}/>},
+        { name: "private", text: "Приватные", icon: <MdMailLock className={styles.icon}/> },
+        { name: "group", text: "Общие", icon: <MdGroups className={styles.icon}/> },
+        { name: "archive", text: "Архив", icon: <MdArchive className={styles.icon}/> }
     ]
 
     const filteredRooms = roomList.filter(room => {
+        if (!currentUser) return;
+        
+        const archivedRoomByUser = room.archivedUsers.includes(currentUser?._id);
+
         if (currentTab === "all") {
-            return !room.archived;
+            return !archivedRoomByUser;
         }
         if (currentTab === "archive") {
-            return room.archived;
+            return archivedRoomByUser;
         }
 
-        if (currentTab === 'private' && room.archived) {
+        if (currentTab === 'private' && archivedRoomByUser) {
             return false;
         }
-        if (currentTab === 'group' && room.archived) {
+        if (currentTab === 'group' && archivedRoomByUser) {
             return false;
         }
 
@@ -73,7 +74,7 @@ const RoomList = () => {
     return (
         <div className={styles['room-list']}>
             <div className={styles['room-list__utils']}>
-                <Headling className={styles.heading} element='h1'>Чаты</Headling>
+                <Headling className={styles.heading} element='h2'>Чаты</Headling>
                 <div className={styles.tabs}>
                     { tabs.map(tab => (
                         <div className={cn(styles.tab, {

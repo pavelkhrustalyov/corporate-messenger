@@ -4,7 +4,7 @@ import styles from './Navigation.module.css';
 import Modal from '../Modal/Modal';
 import Button from '../UI/Button/Button';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
+import { AppDispatch, RootState } from '../../store/store';
 import Avatar from '../Avatar/Avatar';
 import { useLogoutMutation } from '../../store/authSlice/authApiSlice';
 import { logOut } from '../../store/authSlice/authSlice';
@@ -12,13 +12,18 @@ import { useNavigate } from 'react-router-dom';
 import { MdGroupAdd, MdVideoChat, MdLogout, MdOutlineSettingsSuggest } from "react-icons/md";
 import { AiFillWechat } from "react-icons/ai";
 import socket from '../../utils/testSocket';
+import cn from 'classnames';
+import { BsFillSunFill, BsFillMoonFill } from "react-icons/bs";
 
 import { 
+    closeFullImage,
+    getProfile,
     openGroupChatModal, 
     openPrivateChatModal, 
     openProfileModal, 
     openSettingsModal, 
-    openVideoChatModal } from '../../store/modalSlice/modalSlice';
+    openVideoChatModal,
+    } from '../../store/modalSlice/modalSlice';
 
 import {
     closeGroupChatModal,
@@ -27,24 +32,44 @@ import {
     closePrivateChatModal,
     closeVideoChatModal
 } from '../../store/modalSlice/modalSlice';
-import CreateRoom from '../CreatePrivateRoom/CreateRoom';
 
+import CreateRoom from '../CreatePrivateRoom/CreateRoom';
+import { useEffect, useState } from 'react';
+import Input from '../UI/Input/Input';
+import { themes } from '../../utils/themes';
 
 const Navigation = () => {
-    
-    const { user } = useSelector((state: RootState) => state.auth)
     const { 
         isOpenProfile, 
         isOpenGroupChat,
         isOpenSettings,
         isOpenPrivateChat,
         isOpenVideoChat,
-        userIdFromModal } = useSelector((state: RootState) => state.modal);
+        profile,
+        userIdForModal,
+        isOpenFullImage,
+        fullImage
+    } = useSelector((state: RootState) => state.modal);
+    
+    const { user } = useSelector((state: RootState) => state.auth);
 
-    const dispatch = useDispatch();
+    type themesType = "light" | "dark";
+
+    const themeFromLC = localStorage.getItem('theme') as themesType | null;
+
+    const [theme, setTheme] = useState<themesType>(themeFromLC ? themeFromLC : 'light');
+
+    const dispatch = useDispatch<AppDispatch>();
+
+    useEffect(() => {
+        if (userIdForModal) {
+            dispatch(getProfile(userIdForModal));
+        }
+    }, [userIdForModal])
+
     const [ logout ] = useLogoutMutation();
     const navigate = useNavigate();
-    
+
     const logOutHandler = async () => {
         try {
             await logout().unwrap();
@@ -56,13 +81,29 @@ const Navigation = () => {
         }
     }
 
+    const changeThemeHandler = () => {
+        setTheme((prev) => prev === 'light' ? 'dark' : 'light');
+    };
+
+    useEffect(() => {
+        localStorage.setItem('theme', theme);
+        const themeEntries = Object.entries(themes[theme]);
+        
+        for (const [key, value] of themeEntries) {
+            document.documentElement.style.setProperty(key, value);
+        }
+
+    }, [theme])
+
     return (
         <div className={styles.navigation}>
-            <Button className={styles.avatar} color="transparent" 
-                onClick={() => dispatch(openProfileModal(user?._id))}>
+            {
+                user && <Button className={styles.avatar} color="transparent" 
+                    onClick={() => dispatch(openProfileModal(user._id))}>
                 <Avatar size="middle" src={`/avatars/${user?.avatar}`} />
-            </Button>
-
+                </Button>
+            }
+            
             <div className={styles['icons-data']}>
                 <Button className={styles['button-nav']} color="transparent" 
                     onClick={() => dispatch(openGroupChatModal())}>
@@ -83,6 +124,21 @@ const Navigation = () => {
                     onClick={() => dispatch(openSettingsModal())}>
                     <MdOutlineSettingsSuggest className={styles.icon} />
                 </Button>
+
+                <label className={cn(styles['label-checked'], {
+                        [styles['dark']]: theme === 'dark',
+                        [styles['light']]: theme === 'light'
+                    })} htmlFor="theme">
+                    <div className={styles["round"]}></div>
+                    <input
+                        id="theme"
+                        className={styles.checkbox}
+                        name="theme"
+                        onChange={changeThemeHandler}
+                        type="checkbox"
+                        checked={theme === 'dark'}
+                    />
+                </label>
             </div>
        
             <Button className={styles.logout} 
@@ -93,7 +149,7 @@ const Navigation = () => {
             {/* modals */}
 
             <Modal className={styles['profile-modal']} isOpen={isOpenProfile} onClose={() => dispatch(closeProfileModal())}>
-                { userIdFromModal && <Profile userId={userIdFromModal} /> }
+                { profile && <Profile user={profile} /> }
             </Modal>
 
             <Modal isOpen={isOpenGroupChat}
@@ -113,7 +169,12 @@ const Navigation = () => {
 
             <Modal isOpen={isOpenSettings} 
                 onClose={() => dispatch(closeSettingsModal())}>
-                settngs
+                settings
+            </Modal>
+
+            <Modal isOpen={isOpenFullImage} 
+                onClose={() => dispatch(closeFullImage())}>
+                { fullImage && <img src={fullImage} /> }
             </Modal>
         </div>
     );

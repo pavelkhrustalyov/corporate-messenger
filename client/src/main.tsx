@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, Navigate, RouterProvider} from 'react-router-dom';
 import ChatLayout from './layouts/ChatLayout/ChatLayout.tsx';
-import RoomPage from './pages/ChatPage/ChatPage.tsx';
+import RoomPage from './pages/RoomPage/RoomPage.tsx';
 import ChatPlaceholder from './components/ChatPlaceholder/ChatPlaceholder.tsx';
 import AuthLayout from './layouts/AuthLayout/AuthLayout.tsx';
 import Register from './components/Auth/Register/Register.tsx';
@@ -17,8 +17,12 @@ const router = createBrowserRouter([
     path: '/',
     element: (<PrivateRoute><ChatLayout /></PrivateRoute>),
     children: [
-      { path: '/:roomId', element: <RoomPage /> },
       { path: '/', element: <ChatPlaceholder /> },
+      { path: '/:roomId', element: <RoomPage /> }, 
+      {
+        path: '*',
+        element: <div>404 not found</div>
+      }
     ]
   },
   {
@@ -29,8 +33,15 @@ const router = createBrowserRouter([
       { path: 'login', element: <Login /> },
       { path: '/auth', element: <Navigate to="/auth/login" replace /> }
     ]
+  },
+  {
+    path: '*',
+    element: <div>404 not found</div>
   }
 ]);
+
+
+console.log(window.getComputedStyle);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

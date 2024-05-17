@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getMessages, createMessage } from '../controllers/MessageControllers';
+import { getMessages, createMessage, readMessages } from '../controllers/MessageControllers';
 import authMiddleware from '../middlewares/auth';
 import { uploadMessageImage } from '../utils/multer';
 import { resizeImageForMessage } from '../utils/sharp';
@@ -14,5 +14,6 @@ router.post('/create',
     resizeImageForMessage,
     createMessage
 );
+router.patch('/read-messages/:roomId', authMiddleware, readMessages);
 
 export default router;

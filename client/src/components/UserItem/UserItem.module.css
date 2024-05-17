@@ -1,8 +1,7 @@
 .user-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
+    font-size: 14px;
 }
 
 .user-data {
@@ -40,4 +39,8 @@
 .delete {
     font-size: 25px;
     color: var(--ui-danger-color);
+}
+
+.admin {
+    color: var(--text-support-color);
 }

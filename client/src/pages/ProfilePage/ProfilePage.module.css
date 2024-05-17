@@ -1,0 +1,18 @@
+.profile-page {
+    position: relative;
+    padding: 15px;
+    background-color: var(--bg-support-color);
+    width: 20%;
+    border-radius: 10px;
+    box-shadow: var(--box-shadow);
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 30px;
+    transform: rotate(135deg);
+    color: var(--ui-danger-color);
+    cursor: pointer;
+}

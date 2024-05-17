@@ -1,11 +1,17 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IRoom } from '../../interfaces/IRoom';
-import axios, { AxiosError } from 'axios';
-import { AppDispatch } from '../store';
-import { closeGroupChatModal, closePrivateChatModal, closeRoomDataModal, closeTitleModal } from '../modalSlice/modalSlice';
-import { toast } from 'react-toastify';
 
-const BASE_URL = '/api/room';
+import {
+    getRoomById,
+    createRoom,
+    getRooms,
+    inviteToGroupRoom,
+    kickOutOfGroup,
+    leaveRoom,
+    archiveRoom,
+    unarchiveRoom
+} from './roomAsync';
+
 
 interface IInitialState {
     roomList: IRoom[] | [];
@@ -14,124 +20,12 @@ interface IInitialState {
     isError: boolean;
 }
 
-interface IRoomCreateData {
-    title?: string;
-    type: "private" | "group";
-    users: string[];
-}
-
 const initialState: IInitialState = {
     roomList: [],
     room: null,
     isLoading: false,
     isError: false
 }
-
-export const getRoomById = createAsyncThunk(
-    'rooms/getRoomById',
-    async (roomId: string) => {
-        try {
-            const responce = await axios.get<IRoom>(`${BASE_URL}/${roomId}`);
-            return responce.data;
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                toast.error(error.response?.data.message);
-            } else {
-                console.log(error);
-            }
-        }
-    },
-)
-
-export const createRoom = createAsyncThunk<IRoom, IRoomCreateData>(
-    'rooms/createRoom',
-    async (data: IRoomCreateData, thunkAPI) => {
-        const dispatch = thunkAPI.dispatch as AppDispatch;
-        try {
-            const responce = await axios.post(`${BASE_URL}/create-room`, data);
-            if (data.type === "private") {
-                dispatch(closePrivateChatModal())
-            } else {
-                dispatch(closeGroupChatModal())
-            }
-            return responce.data;
-
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                toast.error(error.response?.data.message);
-            } else {
-                console.log(error);
-            }
-        }
-    }
-)
-
-export const getRooms = createAsyncThunk<IRoom[]>(
-    'rooms/getRooms',
-    async () => {
-        try {
-            const responce = await axios.get(`${BASE_URL}/rooms`);
-            return responce.data;
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                toast.error(error.response?.data.message);
-            } else {
-                console.log(error);
-            }
-        }
-    }
-)
-
-export const inviteToGroupRoom = createAsyncThunk(
-    'rooms/inviteToGroupRoom',
-    async (data: { roomId: string, participants: string[] }, thunkAPI) => {
-        const dispatch = thunkAPI.dispatch as AppDispatch;
-
-        try {
-            const responce = await axios.patch(`${BASE_URL}/invite`, data);
-            dispatch(closeRoomDataModal());
-            return responce.data;
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                toast.error(error.response?.data.message);
-            } else {
-                console.log(error);
-            }
-        }
-    }
-)
-
-export const kickOutOfGroup = createAsyncThunk(
-    'rooms/kickOutOfGroup',
-    async (data: { roomId: string, userId: string }) => {
-        try {
-            const responce = await axios.patch(`${BASE_URL}/kickOut`, data);
-            return responce.data;
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                toast.error(error.response?.data.message);
-            } else {
-                console.log(error);
-            }
-        }
-    }
-)
-
-export const leaveRoom = createAsyncThunk(
-    'rooms/leaveRoom',
-    async (roomId: string) => {
-        try {
-            const responce = await axios.delete(`${BASE_URL}/leave/${roomId}`);
-            return responce.data;
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                toast.error(error.response?.data.message);
-            } else {
-                console.log(error);
-            }
-        }
-    }
-)
 
 interface IStatusPayload {
     payload: {
@@ -151,6 +45,7 @@ export const roomSlice = createSlice({
                 state.roomList = [...state.roomList, payload];
             }
         },
+
         updateRoom: (state, { payload }: PayloadAction<IRoom>) => {
             state.roomList = state.roomList.map(room => {
                 if (room._id === payload._id) {
@@ -158,6 +53,10 @@ export const roomSlice = createSlice({
                 }
                 return room;
             })
+        },
+
+        deleteRoom: (state, action: PayloadAction<string>) => {
+            state.roomList = state.roomList.filter(room => room._id !== action.payload);
         },
 
         setRoom: (state, action: PayloadAction<IRoom>) => {
@@ -232,7 +131,9 @@ export const roomSlice = createSlice({
         });
 
         builder.addCase(getRooms.fulfilled, (state, action: PayloadAction<IRoom[]>) => {
-            state.roomList = action.payload;
+            if (action.payload) {
+                state.roomList = action.payload;
+            }
             state.isError = false;
             state.isLoading = false;
         });
@@ -257,15 +158,46 @@ export const roomSlice = createSlice({
             state.isLoading = false;
             state.isError = true;
         });
+
+        // archive / unarchived users
+        builder.addCase(archiveRoom.fulfilled, (state, action: PayloadAction<IRoom>) => {
+            state.roomList = state.roomList.map(room => {
+                if (room._id === action.payload._id) {
+                    return { ...room, archivedUsers: action.payload.archivedUsers };
+                }
+                return room;
+            });
+        });
+
+        builder.addCase(unarchiveRoom.fulfilled, (state, action: PayloadAction<IRoom>) => {
+            state.roomList = state.roomList.map(room => {
+                if (room._id === action.payload._id) {
+                    return { ...room, archivedUsers: action.payload.archivedUsers };
+                }
+                return room;
+            });
+        });
     }
 })
 
 export default roomSlice.reducer;
 
-export const { 
+export const {
     updateRoom,
     updateStatusInRooms,
     addRoom,
     updateStatusInRoom,
-    setRoom
+    setRoom,
+    deleteRoom,
 } = roomSlice.actions;
+
+export {
+    getRoomById,
+    createRoom,
+    getRooms,
+    inviteToGroupRoom,
+    kickOutOfGroup,
+    leaveRoom,
+    archiveRoom,
+    unarchiveRoom,
+};

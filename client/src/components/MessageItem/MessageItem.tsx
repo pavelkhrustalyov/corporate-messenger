@@ -9,19 +9,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
 import { convertBytes } from '../../utils/convertBytes';
 import { getTime } from '../../utils/convertDate';
-import { openProfileModal } from '../../store/modalSlice/modalSlice';
+import { openFullImage, openProfileModal } from '../../store/modalSlice/modalSlice';
 
 interface IMessageItemProps {
     message: IMessage,
     roomType: 'private' | 'group'
 }
 
+
 const MessageItem = ({ message, roomType }: IMessageItemProps) => {
     const { user } = useSelector((state: RootState) => state.auth);
     const dispatch = useDispatch<AppDispatch>();
 
+    const downloadLinkRef = useRef<HTMLAnchorElement>(null);
+
     useEffect(() => {
-        const downloadLink = document.getElementById('downloadLink');
+        const downloadLink = downloadLinkRef.current;
         if (downloadLink) {
             downloadLink.addEventListener('click', function(event: any) {
                 event.preventDefault();
@@ -31,7 +34,7 @@ const MessageItem = ({ message, roomType }: IMessageItemProps) => {
                 window.open(filePath, '_blank');
             });
         }
-    }, [])
+    }, [message.content]);
 
     const isMyMessage = message.senderId._id === user?._id;
 
@@ -54,7 +57,7 @@ const MessageItem = ({ message, roomType }: IMessageItemProps) => {
                 className={cn(styles['message-data'])}>
                 {
                     (roomType === 'group' && !isMyMessage) && (
-                        <div  onClick={() => dispatch(openProfileModal(message.senderId._id))} className={styles['user-data']}>
+                        <div onClick={() => dispatch(openProfileModal(message.senderId._id))} className={styles['user-data']}>
                             <div className={styles.name}>{message.senderId.name}</div>
                             <div className={styles.surname}>{message.senderId.surname}</div>
                         </div>
@@ -62,14 +65,18 @@ const MessageItem = ({ message, roomType }: IMessageItemProps) => {
                 }
                 {
                     message.messageType === "image" && (
-                        <img className={styles.image} src={`/message_images/${message.content?.filename}`} alt="Изображение сообщения" />
+                        <img
+                            onClick={() => dispatch(openFullImage(`/message_images/${message.content?.filename}`))}
+                            className={styles.image}
+                            src={`/message_images/${message.content?.filename}`} 
+                            alt="Изображение сообщения" 
+                        />
                     )
                 }
-
                 {
                   message.messageType === "file" && (
                     <a 
-                        id="downloadLink"
+                        ref={downloadLinkRef}
                         href={`/files/${message.content?.filename}`}
                         download={`/files/${message.content?.filename}`}
                         className={styles.file}

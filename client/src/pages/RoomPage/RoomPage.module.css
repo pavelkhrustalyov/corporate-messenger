@@ -1,0 +1,12 @@
+.room-page {
+    position: relative;
+    display: flex;
+    padding-bottom: 20px;
+    flex-direction: column;
+    flex: 1;
+    border-radius: 10px;
+    -webkit-box-shadow: var(--box-shadow);
+    -moz-box-shadow: var(--box-shadow);
+    box-shadow: var(--box-shadow);
+    background-color: var(--bg-support-color);
+}

@@ -70,9 +70,50 @@
 
 .icon {
     font-size: 40px;
-    color: var(--text-main-color);
+    color: var(--text-light-color);
 }
 
 .logout {
     margin-top: auto;
+}
+
+
+/* custom checkbox */
+.label-checked {
+    margin: 0 auto;
+    width: 30px;
+    height: 55px;
+    padding: 3px;
+    border-radius: 20px;
+    background-color: var(--bg-support-color);
+    cursor: pointer;
+}
+
+.label-checked.dark {
+    background-color: var(--online-color);
+}
+
+.label-checked.dark .round {
+    transform: translateY(25px);
+    background-color: var(--text-light-color);
+}
+
+.label-checked.light {
+    background-color: var(--icon-color);
+}
+
+.label-checked.light .round {
+    background-color: var(--bg-support-color);
+}
+
+.checkbox {
+    display: none;
+}
+
+.round {
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    background-color: var(--online-color);
+    transition: transform 0.3s ease;
 }

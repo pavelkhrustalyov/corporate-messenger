@@ -14,7 +14,11 @@ import roomRoutes from './routes/RoomRoutes';
 import messagesRoutes from './routes/MessageRoutes';
 
 import { errorHandler, notFound } from './middlewares/errorModdleware';
-import User, { IUserSchema } from './models/User';
+import User from './models/User';
+import { readMessage } from './utils/socketHandlers.ts';
+import cors from 'cors';
+import Room, { IRoomSchema } from './models/Room';
+import Message, { IMessageSchema } from './models/Message';
 
 const app = express();
 const server = http.createServer(app);
@@ -29,6 +33,13 @@ export const io = new Server(server, {
       credentials: true
     }
 });
+
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
 dbConnect();
 app.use(json());
@@ -60,40 +71,73 @@ interface Sockets {
   [socketId: string]: string;
 }
 
-// const sockets: Sockets = {};
+let users: { [roomId: string]: string[] } = {}
 
 // socket routes
 io.on('connection', async (socket: Socket) => {
-  
-  socket.on("join-room", (roomId) => {
-    socket.join(roomId);
-  })
+    const userId = Array.isArray(socket.handshake.query.userId) ? socket.handshake.query.userId[0] : socket.handshake.query.userId;
 
-  socket.on('user-online', async (data) => {
-    await User.findByIdAndUpdate(data.userId, {
-      $set: { status: "Online" }
+    socket.on("join-room", async (roomId) => {
+      if (!users[roomId])
+        users[roomId] = [];
+      if (userId && !users[roomId].includes(userId)) {
+        users[roomId].push(userId);
+      }
+
+      socket.join(roomId);
+    })
+
+    socket.on("leave-room", (roomId) => {
+      if (users[roomId]) {
+        const updateRoom = users[roomId].filter(id => userId !== id);
+        users[roomId] = updateRoom;
+      }
+      
+      socket.leave(roomId);
+    })
+
+    socket.on('user-online', async (data) => {
+      await User.findByIdAndUpdate(data.userId, {
+        $set: { status: "Online" }
+      });
+      io.emit("online", data.userId);
     });
-    io.emit("online", data.userId);
-  });
 
-  socket.on('user-offline', async (data) => {
-    await User.findByIdAndUpdate(data.userId, {
-      $set: { status: "Offline", last_seen: Date.now() }
+    socket.on('user-offline', async (data) => {
+      await User.findByIdAndUpdate(data.userId, {
+        $set: { status: "Offline", last_seen: Date.now() }
+      });
+
+      io.emit("offline", data.userId);
     });
 
-    io.emit("offline", data.userId);
-  });
+    socket.on('is-received', async ({ roomId, messageId }) => {
 
-  socket.on("leave-room", (roomId) => {
-    socket.leave(roomId);
-  })
+      const roomUsers = users[roomId];
 
-  socket.on("typing", (data: typingData) => {
-    socket.to(data.roomId).emit("set-typing", data)
-  })
+      if (roomUsers.length > 1) {
+        const room = await Room.findById(roomId);
+        if (!room) {
+            throw new Error('Чат не найден!');
+        }
 
-  socket.on("disconnect", () => {
-  })
+        await Message.updateOne({ _id: messageId }, { isRead: true });
+    
+        const updatedMessage = await Message.findById(messageId)
+            .populate({ path: 'senderId', select: 'name surname avatar status' });
+
+        const updatedRoom = await Room.findById(roomId)
+          .populate({ path: 'participants', select: '_id name surname avatar status last_seen' })
+          .populate({ path: 'creator', select: '_id name surname avatar status last_seen' })
+          .populate({ path: 'messages', select: 'senderId isRead' });
+
+          socket.to(roomId).emit('message-received', { message: updatedMessage, users: roomUsers, room: updatedRoom });
+      }
+    })
+      
+    socket.on("typing", (data: typingData) => {
+      socket.to(data.roomId).emit("set-typing", data)
+    })
 });
 
 // error handlers
@@ -103,27 +147,3 @@ app.use(errorHandler);
 server.listen(process.env.PORT, () => {
     console.log(`listening on ${process.env.PORT}`);
 });
-
- // if (userId) {
-  //   socket.join(userId);
-  // }
-
-  // socket.on('connect-user', async (userId: string) => {
-  //   const user: IUserSchema | null = await User.findByIdAndUpdate(userId, {
-  //     $set: { status: "Online" }
-  //   });
-  // })
-
-  // socket.on('connect-user', async (userId: string) => {
-  //   console.log('connect')
-  //   const user: IUserSchema | null = await User.findByIdAndUpdate(userId, {
-  //     $set: { status: "Online" }
-  //   });
-  // })
-
-  // socket.on('disconnect-user', async (userId: string) => {
-  //   console.log('disconnect')
-  //   const user: IUserSchema | null = await User.findByIdAndUpdate(userId, {
-  //     $set: { status: "Offline" }
-  //   });
-  // })
