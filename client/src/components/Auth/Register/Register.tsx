@@ -7,7 +7,7 @@ import { useRegisterMutation } from '../../../store/authSlice/authApiSlice';
 import { toast, ToastContainer } from 'react-toastify';
 import { AxiosError } from 'axios';
 import CustomSelect from '../../UI/CustomSelect/CustomSelect';
-import { positionTypes } from '../../../types/types';
+import { genderType, positionTypes } from '../../../types/types';
 
 export interface RegisterForm {
     name: string,
@@ -19,11 +19,14 @@ export interface RegisterForm {
     dateOfBirthday: Date | '',
     confirmPassword: string,
     position: positionTypes;
+    gender: genderType;
 }
 
 const Register = () => {
     const [ register, { isSuccess, isLoading } ] = useRegisterMutation();
-    const [selectPosition, setSelectPosition] = useState<positionTypes>("Security Specialist");
+
+    const [selectPosition, setSelectPosition] = useState<positionTypes>("Frontend Developer");
+    const [selectGender, setSelectGender] = useState<genderType>("male"); 
 
     const [positions] = useState<positionTypes[]>([
         'Security Specialist',
@@ -36,8 +39,17 @@ const Register = () => {
         'UX/UI Designer'
     ]);
 
-    const selectHandler = (position: positionTypes) => {
+    const [genders] = useState<genderType[]>([
+        "male",
+        "female"
+    ]);
+
+    const selectHandlerPosition = (position: positionTypes) => {
         setSelectPosition(position);
+    }
+
+    const selectHandlerGender = (gender: genderType) => {
+        setSelectGender(gender);
     }
 
     const navigate = useNavigate();
@@ -51,6 +63,7 @@ const Register = () => {
         phone: '',
         email: '',
         password: '',
+        gender: "male",
         confirmPassword: '',
     });
 
@@ -62,7 +75,7 @@ const Register = () => {
         password, 
         confirmPassword,
         dateOfBirthday,
-        phone
+        phone,
     } = form;
 
     const registerForm = async (e: FormEvent<HTMLFormElement>) => {
@@ -73,13 +86,15 @@ const Register = () => {
         }
         setForm((prevForm) => ({ 
             ...prevForm, 
-            dateOfBirthday: new Date(dateOfBirthday),
-            position: selectPosition
+            dateOfBirthday:  dateOfBirthday ? new Date(dateOfBirthday) : '',
+            position: selectPosition,
+            gender: selectGender,
         }));
         try {
-            await register(form).unwrap();
-            navigate('/auth/login');
-            toast.success('Вы успешно зарегистрировались! Дождитесь подтверждения администратора');
+            // await register(form).unwrap();
+            // toast.success('Вы успешно зарегистрировались! Дождитесь подтверждения администратора');
+            // navigate('/auth/login');
+            console.log(form)
         } catch (error) {
             if (error instanceof AxiosError) {
                 toast.error(error.response?.data.message);
@@ -88,8 +103,6 @@ const Register = () => {
                 toast.error("Ошибка сервера, попробуйте зайти позднее");
             }
         }
-
-       
     };
 
     const onChangeField = (e: ChangeEvent<HTMLInputElement>) => {
@@ -99,8 +112,8 @@ const Register = () => {
 
     return (
         <>
-            <ToastContainer />
             <h1 className={styles.heading}>Регистрация</h1>
+            <ToastContainer />
             <form onSubmit={registerForm} className={styles.auth}>
                 <Input
                     required
@@ -131,7 +144,8 @@ const Register = () => {
                     placeholder="Дата рождения"
                 />
 
-                <CustomSelect selectHandler={selectHandler} data={positions} />
+                <CustomSelect defaultValue={selectPosition} selectHandler={selectHandlerPosition} data={positions} />
+                <CustomSelect defaultValue={selectGender} selectHandler={selectHandlerGender} data={genders} />
 
                 <Input
                     required

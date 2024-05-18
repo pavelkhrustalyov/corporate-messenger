@@ -23,7 +23,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         return res.status(422).json({ errors: errors.array() });
     }
 
-    const { name, surname, patronymic, email, password } = req.body;
+    const { name, surname, patronymic, email, password, position, gender, dateOfBirthday, phone } = req.body;
     let user = await User.findOne({ email });
 
     if (user) {
@@ -38,6 +38,10 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             surname,
             patronymic,
             email,
+            position,
+            gender,
+            dateOfBirthday,
+            phone,
             avatar: 'default.png',
             password: cryptPassword
         });

@@ -12,7 +12,7 @@ export interface IUserSchema extends Document {
     position: positionTypes;
     email: string;
     password: string;
-    sex: 'male' | 'female';
+    gender: 'male' | 'female';
     status: 'Online' | 'Offline';
     notifications: string[];
     isVerified: boolean;
@@ -36,7 +36,7 @@ const UserSchema = new Schema<IUserSchema>({
         type: String,
         required: true
     },
-    sex: {
+    gender: {
         type: String,
         enum: ['male', 'female'],
         required: true

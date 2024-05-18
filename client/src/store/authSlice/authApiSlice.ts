@@ -15,6 +15,7 @@ interface RegisterRequest extends LoginRequest {
     phone: string;
     position: positionTypes;
     dateOfBirthday: Date | '';
+    gender: "male" | "female";
 }
 
 export const authApiSlice = apiSlice.injectEndpoints({

@@ -11,7 +11,8 @@ export interface IUser {
     notifications?: string[];
     isVerified?: boolean;
     avatar: string | "default.jpg";
-    sex: 'male' | 'female';
-    birthday: Date;
+    phone: string;
+    gender: 'male' | 'female';
+    dateOfBirthday: Date;
     last_seen: number,
 }
