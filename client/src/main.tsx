@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import './index.css'
+import './index.css';
 import { createBrowserRouter, Navigate, RouterProvider} from 'react-router-dom';
 import ChatLayout from './layouts/ChatLayout/ChatLayout.tsx';
 import RoomPage from './pages/RoomPage/RoomPage.tsx';
@@ -11,6 +11,7 @@ import PrivateRoute from './components/PrivateRoute/PrivateRoute.tsx';
 import Login from './components/Auth/Login/Login.tsx';
 import { Provider } from 'react-redux';
 import { store } from './store/store.ts';
+import AdminLayout from './layouts/AdminLayout/AdminLayout.tsx';
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
       { path: 'login', element: <Login /> },
       { path: '/auth', element: <Navigate to="/auth/login" replace /> }
     ]
+  },
+  {
+    path: '/admin',
+    element: <AdminLayout />
   },
   {
     path: '*',

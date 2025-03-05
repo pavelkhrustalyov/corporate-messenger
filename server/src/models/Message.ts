@@ -8,7 +8,9 @@ export interface IContent {
 export interface IMessageSchema extends Document {
     roomId: Schema.Types.ObjectId;
     senderId: Schema.Types.ObjectId;
-    messageType: 'text' | 'file' | 'image';
+    messageType: 'text' | 'file' | 'image' | 'voice';
+    replyTo: Schema.Types.ObjectId;
+    repliedMessage: mongoose.SchemaDefinitionProperty<string, IMessageSchema>;
     isRead: boolean;
     content?: IContent;
     text?: string;
@@ -25,8 +27,15 @@ const MessageSchema = new Schema<IMessageSchema>({
     },
     messageType: {
         type: String,
-        enum: ["text", "file", "image"],
+        enum: ["text", "file", "image", "voice"],
         default: "text"
+    },
+    repliedMessage: {
+        type: {
+            senderId: { type: Schema.Types.ObjectId, ref: 'User' },
+            messageId: { type: Schema.Types.ObjectId, ref: 'Message' },
+        },
+        default: null
     },
     isRead: {
         type: Boolean,

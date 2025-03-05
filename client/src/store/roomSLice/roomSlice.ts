@@ -88,6 +88,18 @@ export const roomSlice = createSlice({
                 })}
             })
         },
+
+        updateRoomImageUI: (state, action: PayloadAction<IRoom>) => {
+            state.roomList = state.roomList.map(room => {
+                if (room._id === action.payload._id) {
+                    return { ...room, imageGroup: action.payload.imageGroup };
+                }
+                return room;
+            });
+            if (state.room?._id === action.payload._id) {
+                state.room = { ...state.room, imageGroup: action.payload.imageGroup }
+            }
+        }
     },
     extraReducers: (builder) => {
         builder.addCase(getRoomById.pending, (state) =>   {
@@ -177,6 +189,10 @@ export const roomSlice = createSlice({
                 return room;
             });
         });
+
+        builder.addCase(leaveRoom.fulfilled, (state, action: PayloadAction<string>) => {
+            state.roomList = state.roomList.filter(room => room._id !== action.payload);
+        })
     }
 })
 
@@ -189,6 +205,7 @@ export const {
     updateStatusInRoom,
     setRoom,
     deleteRoom,
+    updateRoomImageUI
 } = roomSlice.actions;
 
 export {

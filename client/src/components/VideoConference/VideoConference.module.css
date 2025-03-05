@@ -1,0 +1,12 @@
+.remoteVideos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.video {
+    width: 300px; /* Задайте желаемую ширину видео */
+    height: 200px; /* Задайте желаемую высоту видео */
+    object-fit: cover; /* Масштабирование видео для заполнения контейнера */
+}

@@ -17,10 +17,10 @@ import {
 import { IRoom } from '../../interfaces/IRoom';
 import Headling from '../Headling/Headling';
 import InviteToGroup from '../InviteToGroup/InviteToGroup';
-import { useEffect } from 'react';
-import socket from '../../utils/testSocket';
-import { deleteRoom, leaveRoom, setRoom } from '../../store/roomSlice/roomSlice';
+import { leaveRoom } from '../../store/roomSlice/roomSlice';
 import { MdLogout } from "react-icons/md";
+import { useNavigate } from 'react-router-dom';
+import SearchMessages from '../SearchMessages/SearchMessages';
 
 interface IPropsRoomHeader {
     messages: IMessage[]; 
@@ -28,45 +28,34 @@ interface IPropsRoomHeader {
 }
 
 const RoomHeader = ({ room }: IPropsRoomHeader) => {
+
     const dispatch = useDispatch<AppDispatch>();
     const { user } = useSelector((state: RootState) => state.auth);
     const { isOpenRoomData } = useSelector((state: RootState) => state.modal);
     const interlocutor = room?.participants.find(p => p._id !== user?._id);
-    const currentUser = useSelector((state: RootState) => state.auth.user);
-
-    useEffect(() => {
-        socket.on("leave-group-room", ({ room, userId }: { room: IRoom, userId: string }) => {
-            if (room) {
-                if (currentUser && currentUser._id === userId) {
-                    dispatch(deleteRoom(room._id));
-                }
-                dispatch(setRoom(room));
-            }
-        });
-
-        return () => {
-            socket.off('leave-group-room');
-        }
-    }, []);
+    const navigate = useNavigate();
 
     const leaveRoomHandler = (roomId: string) => {
         const confirm = window.confirm('Вы хотите покинуть чат?');
-        if (confirm)
+        if (confirm) {
             dispatch(leaveRoom(roomId));
+            navigate('/');
+        }
     };
+    
 
     return (
         <div className={styles['room-header']}>
             <div className={styles.data}>
                 {
-                    room?.type === 'group' 
+                    (room?.type === 'group' || room?.type === 'video')
                     ? <Avatar src={`/group_avatars/${room.imageGroup}`} size='middle' />
                     : <Avatar isOnline={interlocutor?.status === "Online"} src={`/avatars/${interlocutor?.avatar}`} size='middle' />
                 }
 
                 <div className={styles["user-data"]}>
                     {
-                        room?.type === 'group' 
+                        (room?.type === 'group' || room?.type === 'video')
                         ? <div 
                             onClick={() => dispatch(openSideInfo())} 
                             className={styles.title}>{room.title}
@@ -85,20 +74,15 @@ const RoomHeader = ({ room }: IPropsRoomHeader) => {
                     }
                     
                 </div>
-            </div>
-
+            </div>            
             <div className={styles.utils}>
+            <SearchMessages />
+
                 {
                     room?.type === "private" ? (
                         <>
-                            <Button color="transparent">
-                                <img className={styles.icon} src="phone.svg" alt="Позвонить" />
-                            </Button>
-                            <Button color="transparent">
-                                <img className={styles.icon} src="video.svg" alt="начать видеочат" />
-                            </Button>
                             <Button color="transparent" onClick={() => dispatch(openSideInfo())}>
-                                <img className={styles.icon} src="more.svg" alt="Подробнее" />
+                                <img onClick={() => dispatch(openRoomDataModal())} className={styles.icon} src="more.svg" alt="Подробнее" />
                             </Button>
                         </>
                     ) : (
@@ -131,6 +115,7 @@ const RoomHeader = ({ room }: IPropsRoomHeader) => {
                     </>
                 )
             }
+
         </div>
     )
 }

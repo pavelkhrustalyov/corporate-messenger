@@ -12,7 +12,9 @@ import socket from '../../utils/testSocket';
 import { IRoom } from '../../interfaces/IRoom';
 import { getRoomById, updateRoom, updateStatusInRoom } from '../../store/roomSlice/roomSlice';
 import { readMessages } from '../../store/messageSlice/messageSlice';
-import { timeoutType } from '../../types/types';
+import { TimeoutType } from '../../types/types';
+import VideoConference from '../../components/VideoConference/VideoConference';
+import Button from '../../components/UI/Button/Button';
 
 type IRoomPageParams = {
     roomId: string;
@@ -21,21 +23,26 @@ type IRoomPageParams = {
 const RoomPage = () => {
     const { roomId } = useParams<IRoomPageParams>();
     const dispatch = useDispatch<AppDispatch>();
-    const [limit, setLimit] = useState(20);
+    const [limit, setLimit] = useState(50);
     const container = useRef<HTMLDivElement>(null);
     const { messages } = useSelector((state: RootState) => state.messages);
     const { isLoading } = useSelector((state: RootState) => state.messages);
     const { room } = useSelector((state: RootState) => state.rooms);
-    const { user } = useSelector((state: RootState) => state.auth);
 
     useEffect(() => {
         if (roomId) {
             dispatch(getRoomById(roomId))
             dispatch(getMessages({ roomId, limit }))
-            dispatch(readMessages(roomId))
+            dispatch(readMessages({ roomId, limit }))
             setTimeout(ScrollToBottom, 0);
         }
     }, [roomId, dispatch])
+
+    useEffect(() => {
+        if (roomId)
+            dispatch(getMessages({ roomId, limit }))
+    }, [limit]);
+
 
     useEffect(() => {
         const handleOnline = (userId: string) => {
@@ -58,7 +65,7 @@ const RoomPage = () => {
     }, [room]);
 
     useEffect(() => {
-        socket.on("message", ({ message, roomId }) => {
+        socket.on("message", ({ message, roomId }: { message: IMessage, roomId: string }) => {
             dispatch(createMessage(message));
             setTimeout(ScrollToBottom, 0);
             socket.emit('is-received', ({ roomId, messageId: message._id }));
@@ -76,7 +83,7 @@ const RoomPage = () => {
     }, [])
 
     useEffect(() => {
-        let timeout: timeoutType;
+        let timeout: TimeoutType;
 
         socket.on('read-messages', ({ room, messages }) => {
             messages.reverse();
@@ -97,7 +104,7 @@ const RoomPage = () => {
 
 
     useEffect(() => {
-        let timeout: timeoutType;
+        let timeout: TimeoutType;
 
         socket.on('message-received', ({ message, room }: 
             { room: IRoom, users: string[], message: IMessage }) => {
@@ -106,7 +113,6 @@ const RoomPage = () => {
                 dispatch(updateMessage(message));
                 dispatch(updateRoom(room));
             }, 500)
-
         })
 
         return () => {
@@ -137,17 +143,39 @@ const RoomPage = () => {
 
     return (
         <div className={styles['room-page']}>
+            {
+                room?.type !== "video" && 
+                    <Button 
+                        className={styles['more-messsage']} 
+                        onClick={() => setLimit(prevLimit => prevLimit + 10)} 
+                        color='primary'>Загрузить сообщения
+                    </Button>
+            }
+            
+            
             <RoomHeader 
-                room={room} 
-                messages={messages && messages} 
+                room={room}
+                messages={messages && messages}
             />
-            <MessageList 
-                ref={container} 
-                room={room} 
-                messages={messages} 
-                isLoading={isLoading}
-            />
-            <CreateMessageForm roomId={roomId} />
+
+            {
+                room && room?.type === "video" ? 
+                    <VideoConference 
+                        roomId={room._id} 
+                        participants={room.participants.map((p) => p._id)} 
+                    /> :
+                (
+                    <>
+                        <MessageList
+                        ref={container}
+                        room={room}
+                        messages={messages}
+                        isLoading={isLoading}
+                    />
+                        <CreateMessageForm roomId={roomId} />
+                    </>
+                )
+            }
         </div>
     )
 }

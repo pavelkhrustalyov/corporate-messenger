@@ -1,0 +1,36 @@
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+thead {
+    background-color: var(--bg-main-color);
+    color: var(--text-light-color);
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--icon-color);
+}
+
+tbody tr:hover {
+    background-color: var(--ui-main-color);
+}
+
+th {
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.verified {
+    background-color: var(--success-color);
+    padding: 10px;
+    border-radius: 3px;
+    color: var(--text-light-color);
+}
+
+.toucheble-th {
+    cursor: pointer;
+}

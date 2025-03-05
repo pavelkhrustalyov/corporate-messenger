@@ -77,7 +77,7 @@
     border-radius: 10px;
     font-weight: bold;
     background-color: var(--bg-support-color);
-    color: var(--bg-main-color);
+    color: var(--text-support-color);
     -webkit-box-shadow: 0px -1px 8px 0px var(--box-shadow);
     -moz-box-shadow: 0px -1px 8px 0px var(--box-shadow);
     box-shadow: 0px -1px 8px 0px var(--box-shadow);

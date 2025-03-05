@@ -44,10 +44,8 @@ export const searchUsers = async (req: Request, res: Response, next: NextFunctio
     }
 }
 
-
-
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
-    const { name, surname, patronymic, email }: IUserSchema = req.body;
+    const { name, surname, patronymic, email, phone, dateOfBirthday }: IUserSchema = req.body;
 
     const errors = validationResult(req);
 
@@ -67,11 +65,12 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
             name,
             surname,
             patronymic,
-            email
+            email,
+            phone,
+            dateOfBirthday
         })
-
-        const updatedUser = await User.findById(req.user?._id);
-
+        const updatedUser = await User.findById(req.user?._id)
+            .select('-password');
         return res.status(200).json(updatedUser);
     } catch (error) {
         next(error);
@@ -80,7 +79,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
 
 export const updateAvatar = async (req: Request, res: Response, next: NextFunction) => {
     if (!req.file) {
-        return res.status(200).json(req.user?.avatar);
+        return res.status(200).json(req.user);
     }
 
     const filename = req.file.filename;
@@ -99,7 +98,10 @@ export const updateAvatar = async (req: Request, res: Response, next: NextFuncti
         await user?.updateOne({
             $set: { avatar: filename }
         })
-        return res.status(201).json(filename);
+        const userUpdated = await User.findById(req.user?._id)
+            .select('-password');
+
+        return res.status(201).json(userUpdated);
     } catch (error) {
         next(error);
     }

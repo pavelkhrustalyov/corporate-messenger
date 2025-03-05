@@ -1,11 +1,12 @@
 import { Router } from 'express';
 // import { check } from 'express-validator';
-import { deleteUser, verifyUser } from '../controllers/AdminControllers';
+import { unverifyUser, verifyUser, updatePosition } from '../controllers/AdminControllers';
 import authMiddleware from '../middlewares/auth';
 
 const router = Router();
 
-router.delete('/user/:userId', authMiddleware, deleteUser);
-router.patch('/user/:userId', authMiddleware, verifyUser);
+router.patch('/verify/:userId', authMiddleware, verifyUser);
+router.delete('/unverify/:userId', authMiddleware, unverifyUser);
+router.patch('/update-position/:userId', authMiddleware, updatePosition);
 
 export default router;

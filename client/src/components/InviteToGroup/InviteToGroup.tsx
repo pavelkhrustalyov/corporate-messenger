@@ -36,7 +36,7 @@ const InviteToGroup = ({ roomId, users }: { roomId: string, users: IUser[] }) =>
     return (
         <div className={styles['invite-to-group']}>
             <UserList userIds={userIds} addUserToRoom={addId}/>
-            <Button 
+            <Button
                 onClick={() => addUserToRoom()} 
                 color="primary">{isLoading ? 'Загрузка...' : 'Добавить в чат'}</Button>
         </div>

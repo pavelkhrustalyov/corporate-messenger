@@ -3,6 +3,7 @@ import { validationResult } from 'express-validator';
 import User from '../models/User';
 import bcrypt from 'bcryptjs';
 import generateToken from "../utils/generateToken";
+import { io } from "..";
 
 export const logOut = async (_req: Request, res: Response, next: NextFunction) => {
     try {
@@ -47,6 +48,8 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         });
     
         await user.save(); 
+        io.emit("user-create", user);
+        
         return res.status(200).json({ 
             message: `Пользователь успешно зарегистрирован, 
             дождитесь одобрения администратора` 
@@ -57,26 +60,26 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 };
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
-    const errors = validationResult(req);
     const { email, password } = req.body;
-
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
-    }
-
     try {
         let user = await User.findOne({ email });
 
+        if (!user) {
+            res.status(404);
+            throw new Error('Пользователь не найден!');
+        }
+
+        if (!user?.isVerified) {
+            res.status(400);
+            throw new Error('Ваш аккаунт не подтвержден');
+        }
+
         if (user && (await user.matchPassword(password))) {
             generateToken(res, user._id);
-            return res.status(200).json({
-                _id: user._id, 
-                name: user.name,
-                surname: user.surname,
-                status: user.status,
-                avatar: user.avatar,
-                notifications: user.notifications
-            });
+            const userObject = user.toObject();
+            
+            const { password, ...modifiedUser } = userObject;
+            return res.status(200).json(modifiedUser);
         } else {
             res.status(400);
             throw new Error('Неверный email или пароль');
@@ -100,3 +103,4 @@ export const getMe = async (req: Request, res: Response, next: NextFunction) => 
         next(error);
     }
 };
+

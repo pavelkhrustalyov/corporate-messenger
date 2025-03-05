@@ -4,14 +4,11 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 10;
     background-color: rgba(15, 22, 33, 0.5);
+    z-index: 100000 !important;
 }
 
 .modal-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     position: fixed;
     padding: 20px;
     min-width: 350px;
@@ -21,5 +18,4 @@
     background-color: var(--bg-support-color);
     color: var(--text-support-color);
     border-radius: 10px;
-    z-index: 10;
 }

@@ -1,26 +1,34 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { IUser } from "../../interfaces/IUser";
 import axios, { AxiosError } from "axios";
+import { Theme } from "../../types/types";
 
 interface IInitialState {
-    isOpenProfile: boolean,
-    isOpenGroupChat: boolean,
-    isOpenSettings: boolean,
-    isOpenUsers: boolean,
-    isOpenVideoChat: boolean,
+    isOpenAdminEditProfile: boolean;
+    isOpenProfile: boolean;
+    isOpenGroupChat: boolean;
+    isOpenSettings: boolean;
+    isOpenUsers: boolean;
+    isOpenVideoChat: boolean;
     isOpenRoomData: boolean;
     isOpenTitle: boolean;
     isOpenPrivateChat: boolean;
     isOpenSideInfo: boolean;
+    isOpenEditProfile: boolean;
     fullImage: string | null;
     isOpenFullImage: boolean;
     profile: IUser | null;
     userIdForModal: string | null;
+    userIdForAdmin: string | null;
+    theme: Theme;
 }
 
 const isOpenSideInfo = localStorage.getItem('isOpenSideInfo');
+const themeFromLC = localStorage.getItem('theme') as Theme | null;
 
 const initialState: IInitialState = {
+    theme: themeFromLC ? themeFromLC : "light",
+    isOpenAdminEditProfile: false,
     isOpenProfile: false,
     isOpenGroupChat: false,
     isOpenSettings: false,
@@ -31,18 +39,30 @@ const initialState: IInitialState = {
     isOpenTitle: false,
     isOpenPrivateChat: false,
     isOpenFullImage: false,
+    isOpenEditProfile: false,
     profile: null,
     fullImage: null,
     userIdForModal: null,
+    userIdForAdmin: null,
 }
 
 export const modalSlice = createSlice({
     name: 'modal',
     initialState,
     reducers: {
+        openAdminEditProfile: (state, action: PayloadAction<string>) => {
+            state.isOpenAdminEditProfile = true;
+            state.userIdForAdmin = action.payload;
+        },
         openProfileModal: (state, action: PayloadAction<string>) => {
             state.isOpenProfile = true;
             state.userIdForModal = action.payload;
+        },
+        setTheme: (state, action: PayloadAction<Theme>) => {
+            state.theme = action.payload;
+        },
+        openEditProfile: (state) => {
+            state.isOpenEditProfile = true;
         },
         openFullImage: (state, action: PayloadAction<string>) => {
             state.fullImage = action.payload;
@@ -56,6 +76,7 @@ export const modalSlice = createSlice({
             state.isOpenProfile = false;
             state.profile = null;
             state.userIdForModal = null;
+            state.isOpenEditProfile = false;
         },
         openGroupChatModal: (state) => {
             state.isOpenGroupChat = true;
@@ -107,6 +128,13 @@ export const modalSlice = createSlice({
         closeTitleModal: (state) => {
             state.isOpenTitle = false;
         },
+        closeEditProfile: (state) => {
+            state.isOpenEditProfile = false;
+        },
+        closeAdminEditProfile: (state) => {
+            state.isOpenAdminEditProfile = false;
+            state.userIdForAdmin = null;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(getProfile.fulfilled, (state, action) => {
@@ -120,6 +148,7 @@ export const modalSlice = createSlice({
 export const getProfile = createAsyncThunk(
     'modal/getProfile',
     async (userId: string) => {
+        console.log("тут");
         try {
             const response = await axios.get<IUser>(`/api/user/${userId}`)
             return response.data;
@@ -153,5 +182,10 @@ export const {
     openSideInfo,
     closeSideInfo,
     openFullImage,
-    closeFullImage
+    closeFullImage,
+    openEditProfile,
+    closeEditProfile,
+    setTheme,
+    closeAdminEditProfile,
+    openAdminEditProfile
 } = modalSlice.actions;

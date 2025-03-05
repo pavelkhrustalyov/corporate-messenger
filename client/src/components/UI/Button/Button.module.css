@@ -6,6 +6,7 @@
     border-radius: 10px;
     color: var(--text-light-color);
     transition: 0.2s all;
+    /* line-height: 0; */
 }
 
 
@@ -37,4 +38,13 @@
 
 .button.primary:active {
     transform: translateY(1px);
+}
+
+
+.button.round {
+    border-radius: 100%;
+}
+
+.button.success {
+    background-color: var(--success-color);
 }

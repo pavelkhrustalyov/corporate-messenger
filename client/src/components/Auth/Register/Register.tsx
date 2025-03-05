@@ -5,77 +5,55 @@ import styles from '../Auth.module.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRegisterMutation } from '../../../store/authSlice/authApiSlice';
 import { toast, ToastContainer } from 'react-toastify';
-import { AxiosError } from 'axios';
 import CustomSelect from '../../UI/CustomSelect/CustomSelect';
-import { genderType, positionTypes } from '../../../types/types';
-
-export interface RegisterForm {
-    name: string,
-    surname: string,
-    patronymic: string,
-    email: string,
-    password: string,
-    phone: string,
-    dateOfBirthday: Date | '',
-    confirmPassword: string,
-    position: positionTypes;
-    gender: genderType;
-}
+import { Gender, Position, SelectType } from '../../../types/types';
+import { RegisterForm } from '../../../interfaces/RegisterForm';
+import { gendersForSelect, positionsForSelect } from './utils';
 
 const Register = () => {
-    const [ register, { isSuccess, isLoading } ] = useRegisterMutation();
-
-    const [selectPosition, setSelectPosition] = useState<positionTypes>("Frontend Developer");
-    const [selectGender, setSelectGender] = useState<genderType>("male"); 
-
-    const [positions] = useState<positionTypes[]>([
-        'Security Specialist',
-        'Systems Analyst',
-        'QA Engineer',
-        'Product Manager',
-        'DevOps Engineer',
-        'Backend Developer',
-        'Frontend Developer',
-        'UX/UI Designer'
-    ]);
-
-    const [genders] = useState<genderType[]>([
-        "male",
-        "female"
-    ]);
-
-    const selectHandlerPosition = (position: positionTypes) => {
-        setSelectPosition(position);
-    }
-
-    const selectHandlerGender = (gender: genderType) => {
-        setSelectGender(gender);
-    }
-
+    const [ register, { isLoading } ] = useRegisterMutation();
     const navigate = useNavigate();
+
+    const [selectPosition, setSelectPosition] = useState<Position>("Frontend Developer");
+    const [selectGender, setSelectGender] = useState<Gender>("male");
+
+    const [positions] = useState<SelectType[]>(positionsForSelect);
+    const [genders] = useState<SelectType[]>(gendersForSelect);
+
+    const selectHandlerPosition = (position: Position) => {
+        setSelectPosition(position);
+        setForm((prevForm) => ({ ...prevForm, position }));
+    }
+
+    const selectHandlerGender = (gender: Gender) => {
+        setSelectGender(gender);
+        setForm((prevForm) => ({ ...prevForm, gender }));
+    }
 
     const [ form, setForm ] = useState<RegisterForm>({
         name: '',
         surname: '',
         patronymic: '',
         dateOfBirthday: '',
-        position: 'Security Specialist',
+        position: selectPosition,
         phone: '',
         email: '',
         password: '',
-        gender: "male",
+        gender: selectGender,
         confirmPassword: '',
     });
 
     const {
         name, 
-        surname, 
-        patronymic, 
-        email, 
-        password, 
+        surname,
+        patronymic,
+        email,
+        password,
         confirmPassword,
         dateOfBirthday,
         phone,
+        position,
+        gender
     } = form;
 
     const registerForm = async (e: FormEvent<HTMLFormElement>) => {
@@ -84,23 +62,18 @@ const Register = () => {
             toast.error("Пароли не совпадают!");
             return;
         }
-        setForm((prevForm) => ({ 
-            ...prevForm, 
-            dateOfBirthday:  dateOfBirthday ? new Date(dateOfBirthday) : '',
-            position: selectPosition,
-            gender: selectGender,
-        }));
+      
         try {
-            // await register(form).unwrap();
-            // toast.success('Вы успешно зарегистрировались! Дождитесь подтверждения администратора');
-            // navigate('/auth/login');
-            console.log(form)
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                toast.error(error.response?.data.message);
+            await register(form).unwrap();
+            navigate('/auth/login');
+            toast.success('Вы успешно зарегистрировались! Дождитесь подтверждения администратора');
+        } catch (error: any) {
+            if (error && error?.status === 400) {
+                toast.error(error.data.message);
+                return;
             } else {
-                console.log(error.data.message)
                 toast.error("Ошибка сервера, попробуйте зайти позднее");
+                return;
             }
         }
     };
@@ -136,6 +109,16 @@ const Register = () => {
 
                 <Input
                     required
+                    name="patronymic"
+                    value={patronymic}
+                    onChange={onChangeField}
+                    className={styles.field}
+                    type="text"
+                    placeholder="Введите отчество"
+                />
+
+                <Input
+                    required
                     name="dateOfBirthday"
                     value={dateOfBirthday}
                     onChange={onChangeField}
@@ -144,18 +127,19 @@ const Register = () => {
                     placeholder="Дата рождения"
                 />
 
-                <CustomSelect defaultValue={selectPosition} selectHandler={selectHandlerPosition} data={positions} />
-                <CustomSelect defaultValue={selectGender} selectHandler={selectHandlerGender} data={genders} />
-
-                <Input
-                    required
-                    name="patronymic"
-                    value={patronymic}
-                    onChange={onChangeField}
-                    className={styles.field}
-                    type="text"
-                    placeholder="Введите отчество"
+                <CustomSelect 
+                    className={styles.select} 
+                    defaultValue={position} 
+                    selectHandler={selectHandlerPosition} 
+                    data={positions}
                 />
+                <CustomSelect 
+                    className={styles.select} 
+                    defaultValue={gender} 
+                    selectHandler={selectHandlerGender} 
+                    data={genders}
+                />
+
                 <Input
                     required
                     name="phone"
@@ -196,7 +180,7 @@ const Register = () => {
                     placeholder="Повторите пароль"
                 />
 
-                <Button color="primary">Регистрация</Button>
+                <Button color="primary">{ isLoading ? 'Загрузка...' : "Регистрация"}</Button>
 
                 <div className={styles.question}>
                 <span>Есть аккаунт? </span> 
@@ -204,7 +188,6 @@ const Register = () => {
                 </div>
             </form>
         </>
-        
     );
 }
 

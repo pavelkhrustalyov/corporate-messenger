@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AllowedDownloadImmediatelyWhenApplicationLaunch</key>
+	<string>0</string>
+	<key>BannerJumpURL</key>
+	<string>https://wae.wondershare.cc/embed/14214/index.html</string>
+	<key>BugsplatServerURL</key>
+	<string>https://Wondershare_InstallerForMac.bugsplatsoftware.com/</string>
+	<key>BuildMachineOSBuild</key>
+	<string>22D68</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>uniconverter Installer</string>
+	<key>CFBundleExecutable</key>
+	<string>Product Installer</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.wondershare.Installer</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>uniconverter Installer</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>3.8.3</string>
+	<key>CFBundleSupportedPlatforms</key>
+	<array>
+		<string>MacOSX</string>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>318</string>
+	<key>CarouselEnabled</key>
+	<true/>
+	<key>DTCompiler</key>
+	<string>com.apple.compilers.llvm.clang.1_0</string>
+	<key>DTPlatformBuild</key>
+	<string>14B47b</string>
+	<key>DTPlatformName</key>
+	<string>macosx</string>
+	<key>DTPlatformVersion</key>
+	<string>13.0</string>
+	<key>DTSDKBuild</key>
+	<string>22A372</string>
+	<key>DTSDKName</key>
+	<string>macosx13.0</string>
+	<key>DTXcode</key>
+	<string>1410</string>
+	<key>DTXcodeBuild</key>
+	<string>14B47b</string>
+	<key>DownloadApplicationPackageURL</key>
+	<string>https://download-ru.wondershare.com/cbs_down/uniconverter15-mac_full14214.zip</string>
+	<key>GATrackerID</key>
+	<string>UA-80734007-6</string>
+	<key>InstallApplicationID</key>
+	<string>com.Wondershare.Video-Converter-Ultimate</string>
+	<key>InstallApplicationName</key>
+	<string>для Mac (Russian)</string>
+	<key>InstallApplicationVersion</key>
+	<string>0.0.0</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.productivity</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.10</string>
+	<key>MinimumSupportSystemVersion</key>
+	<string>10.11</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright © 2019 Wondershare. All rights reserved.</string>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>SpareDownloadPackageURL</key>
+	<string>https://download-ru.wondershare.com/cbs_down/uniconverter15-mac_arm_full14214.zip</string>
+</dict>
+</plist>

@@ -7,9 +7,12 @@ import { getRooms,
     getRoomById,
     createRoom,
     archive,
-    unarchive } from '../controllers/RoomControllers';
+    unarchive, 
+    updateGroupRoomImage} from '../controllers/RoomControllers';
 
 import authMiddleware from '../middlewares/auth';
+import { uploadGroupImage } from '../utils/multer';
+import { resizeImageGroup } from '../utils/sharp';
 
 const router: Router = Router();
 
@@ -22,6 +25,12 @@ router.post('/unarchive/:roomId', authMiddleware, unarchive);
 
 router.get('/:roomId', authMiddleware, getRoomById);
 router.post('/create-room', authMiddleware, createRoom);
+router.patch('/:roomId/upload', 
+    uploadGroupImage.single('group-avatar'), 
+    resizeImageGroup, 
+    authMiddleware, 
+    updateGroupRoomImage);
+
 router.delete('/leave/:roomId', authMiddleware, leaveRoom);
 
 export default router;

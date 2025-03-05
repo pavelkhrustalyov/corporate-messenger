@@ -6,13 +6,14 @@ import Avatar from '../Avatar/Avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
 import { getFullDate } from '../../utils/convertDate';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import socket from '../../utils/testSocket';
 import { updateStatusInRooms } from '../../store/roomSlice/roomSlice';
 import { AiOutlineClose } from "react-icons/ai";
 import { archiveRoom, unarchiveRoom } from '../../store/roomSlice/roomSlice';
 import Headling from '../Headling/Headling';
 import { titleSlice } from '../../utils/textSlice';
+import { FaFile } from "react-icons/fa6";
 
 interface IRoomItemProps {
     room: IRoom
@@ -72,15 +73,23 @@ const RoomItem = ({ room }: IRoomItemProps) => {
         }
     };
 
+    const isFileOrImage = room.lastMessage && 
+        (room.lastMessage.messageType === "file" || room.lastMessage.messageType === "image");
+    const text = room.lastMessage?.text || "";
+
     return (
         <NavLink
             to={`${room._id}`}
             onContextMenu={contextMenuHandler}
             className={({ isActive }) => cn(styles['room-item'], { [styles.active]: isActive })}
         >
-            { room.type === 'group' ?
+            { room.type === 'group' || room.type === 'video' ?
                 <Avatar src={`/group_avatars/${room.imageGroup}`} size='middle' alt={room.title}/>
-                : <Avatar isOnline={interlocutor?.status === "Online"} src={`/avatars/${interlocutor?.avatar}`} size='middle' alt={interlocutor?.name}/>
+                : <Avatar 
+                    isOnline={interlocutor?.status === "Online"} 
+                    src={`/avatars/${interlocutor?.avatar}`} 
+                    size='middle' alt={interlocutor?.name}
+                />
             }
 
             {
@@ -97,15 +106,15 @@ const RoomItem = ({ room }: IRoomItemProps) => {
             
             <div className={styles['room-item__data']}>
                 <div className={styles['room-item__title']}>
-                    <> {room.type === 'group'
+                    <> {room.type === 'group' || room.type === 'video'
                         ? <Headling element='h4'>{titleSlice(room.title || '', 18)}</Headling>
                         : <Headling element='h4'>{titleSlice(getFullName(), 25)}</Headling> }
                         { unreadMessages.length !== 0 && <span className={styles.unread}>{unreadMessages.length}</span>}
                     </>
                 </div>
-                <div className={styles['room-item__message']}>{ titleSlice(room.lastMessage, 25)}</div>
+                <div className={styles['room-item__message']}>{ isFileOrImage && <span><FaFile/>Вложение</span> } { titleSlice(text, 25)}</div>
                 <div className={styles['room-item__date']}>
-                    { room.updatedAt ?
+                    { room.updatedAt ? 
                     getFullDate(room.updatedAt) : 
                     getFullDate(room.createdAt) }
                 </div>
@@ -115,5 +124,5 @@ const RoomItem = ({ room }: IRoomItemProps) => {
     )
 };
 
-export default RoomItem;
+export default memo(RoomItem);
 

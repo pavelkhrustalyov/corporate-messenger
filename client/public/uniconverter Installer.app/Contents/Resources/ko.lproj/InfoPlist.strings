@@ -1,0 +1,16 @@
+/*
+InfoPlist.strings
+ProductInstaller
+
+Created by SZ13031814M01 on 13/06/2019.
+Copyright © 2019 PE. All rights reserved.
+*/
+"PID" = "14214";
+"Language" = "ko";
+"CFBundleName" = "uniconverter 설치 프로그랩";
+"CFBundleDisplayName" = "uniconverter 설치 프로그랩";
+"NSHumanReadableCopyright" = "Copyright © 2023 Wondershare. 모든 권리 보유.";
+"CustomerServiceURL" = "http://cbs.wondershare.com/go.php?pid=14214&m=dc";
+"ProductPageURL" = "http://cbs.wondershare.com/go.php?pid=14214&m=dp";
+"UserAgreementURL" = "https://www.wondershare.kr/pop/license.html#license";
+"PrivacyPolicyURL" = "https://www.wondershare.kr/pop/license.html#privacy";

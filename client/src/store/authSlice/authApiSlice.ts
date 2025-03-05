@@ -1,27 +1,13 @@
 import { IUser } from "../../interfaces/IUser";
-import { positionTypes } from "../../types/types";
+import { LoginForm } from "../../interfaces/LoginForm";
+import { RegisterForm } from "../../interfaces/RegisterForm";
 import { apiSlice } from "../apiSlice";
 const BASE_URL = '/api/auth';
-
-interface LoginRequest {
-    email: string;
-    password: string;
-}
-
-interface RegisterRequest extends LoginRequest {
-    name: string;
-    surname: string;
-    patronymic: string;
-    phone: string;
-    position: positionTypes;
-    dateOfBirthday: Date | '';
-    gender: "male" | "female";
-}
 
 export const authApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         
-        login: builder.mutation<IUser, LoginRequest>({
+        login: builder.mutation<IUser, LoginForm>({
             query: (data) => ({
                 url: `${BASE_URL}/login`,
                 method: 'POST',
@@ -31,7 +17,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 }
             }),
         }),
-        register: builder.mutation<void, RegisterRequest>({
+        register: builder.mutation<void, RegisterForm>({
             query: (data) => ({
                 url: `${BASE_URL}/register`,
                 method: 'POST',

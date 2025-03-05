@@ -3,7 +3,7 @@ import RoomItem from '../RoomItem/RoomItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { addRoom, getRooms, updateRoom } from '../../store/roomSlice/roomSlice';
 import { AppDispatch, RootState } from '../../store/store';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import Headling from '../Headling/Headling';
 import cn from 'classnames';
 import Loader from '../Loader/Loader';
@@ -17,10 +17,30 @@ const RoomList = () => {
     const dispatch = useDispatch<AppDispatch>();
     const [ addedRooms, setAddedRooms ] = useState<string[]>([]);
     const { user: currentUser } = useSelector((state: RootState) => state.auth);
-
+    
     useEffect(() => {
         dispatch(getRooms());
     }, []);
+
+    useEffect(() => {
+        socket.on("sound-notification", ({ roomId, userId }: { roomId: string, userId: string }) => {
+            const room = roomList.find(room => room._id == roomId);
+            const audio = new Audio('/message-sound2.mp3');
+
+
+            if (room) {
+                const userExist = room.participants.find(user =>
+                    (user._id == currentUser?._id) && (userId !== currentUser._id));
+                if (userExist) {
+                    audio.play();
+                }
+            }
+        });
+
+        return () => {
+            socket.off("sound-notification");
+        }
+    }, [roomList]);
 
     useEffect(() => {
         socket.on("create-room", (room: IRoom) => {
@@ -32,6 +52,7 @@ const RoomList = () => {
                 }
             }
         });
+
         socket.on("update-room", ({ room }: { room: IRoom }) => {
             dispatch(updateRoom(room));
         });
@@ -95,4 +116,4 @@ const RoomList = () => {
     )
 };
 
-export default RoomList;
+export default memo(RoomList);

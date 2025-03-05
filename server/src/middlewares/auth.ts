@@ -1,8 +1,6 @@
 import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import User, { IUserSchema } from '../models/User';
-// import asyncHandler from 'express-async-handler'
-// import User, { IUserSchema } from '../models/User';
 
 interface DecodedToken extends JwtPayload {
     id: string;

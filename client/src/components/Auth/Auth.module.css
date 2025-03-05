@@ -12,13 +12,14 @@
     margin: 0;
     padding: 10px;
     text-align: center;
-    color: var(--text-main-color);
+    color: var(--text-light-color);
     background-color: var(--bg-main-color);
     opacity: 0.8;
     border-radius: 3px;
 }
 
 .field {
+    padding: 10px;
     margin-bottom: 10px;
     border-radius: 3px;
 }
@@ -28,11 +29,19 @@
     align-items: center;
     justify-content: center;
     margin-top: 10px;
-    color: var(--text-main-color);
+    color: var(--text-light-color);
 }
 
 .question a {
     font-weight: bold;
-    color: var(--text-main-color);
+    color: var(--text-light-color);
     margin-left: 10px;
+}
+
+.select {
+    margin-bottom: 10px;
+    border-radius: 3px;
+    font-size: 16px;
+    color: var(--icon-color);
+    background-color: var(--bg-support-color);
 }

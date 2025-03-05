@@ -2,6 +2,8 @@ import Room, { IRoomSchema } from "../models/Room";
 import { Request, Response, NextFunction } from 'express';
 import User from "../models/User";
 import { io } from "../index";
+import { unlink } from 'fs/promises';
+import { join } from 'node:path';
 
 export const getRooms = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -9,7 +11,8 @@ export const getRooms = async (req: Request, res: Response, next: NextFunction) 
             participants: { $in: [req.user?._id] },
         })
         .populate({ path: 'participants', select: 'name surname avatar status last_seen' })
-        .populate({ path: 'messages', select: 'senderId isRead' });
+        .populate({ path: 'messages', select: 'senderId isRead' })
+        .populate({ path: "lastMessage", select: "senderId messageType content text" });
         
         return res.status(200).json(rooms);
     } catch (error) {
@@ -22,9 +25,10 @@ export const getRoomById = async (req: Request, res: Response, next: NextFunctio
 
     try {
         const room = await Room.findById(roomId)
-        .populate({ path: 'participants', select: '_id name surname avatar status last_seen' })
+        .populate({ path: 'participants', select: '_id name surname avatar status last_seen dateOfBirthday phone' })
         .populate({ path: 'creator', select: '_id name surname avatar status last_seen' })
-        .populate({ path: 'messages', select: 'senderId isRead' });
+        .populate({ path: 'messages', select: 'senderId isRead' })
+        .populate({ path: "lastMessage", select: "senderId messageType content text" })
 
         if (!room) {
             res.status(404);
@@ -66,7 +70,7 @@ export const createRoom = async (req: Request, res: Response, next: NextFunction
                 room = await Room.create({
                     type,
                     participants: [ req.user?._id, user ],
-                    lastMessage: ""
+                    lastMessage: null
                 })
             } else {
                 res.status(401);
@@ -83,13 +87,15 @@ export const createRoom = async (req: Request, res: Response, next: NextFunction
                 type,
                 title,
                 participants: [req.user?._id, ...users],
-                lastMessage: "",
+                lastMessage: null,
                 imageGroup: 'default-group.png'
             })
         }
 
         await room.save();
-        await room.populate({ path: "participants", select: "name surname avatar status" });
+        await room.populate({ path: "participants", select: "name surname avatar status" })
+        await room.populate({ path: "lastMessage", select: "senderId messageType content text" })
+
         io.emit("create-room", room);
         return res.status(201).json(room);
 
@@ -116,16 +122,15 @@ export const leaveRoom = async (req: Request, res: Response, next: NextFunction)
             throw new Error("Нельзя выйти из приватного чата");
         }
 
-        if (room.participants.length <= 1) {
-            await room.deleteOne();
-            return res.status(204).json({ message: "Чат успешно удален" });
-        }
-
         await room.updateOne({
             $pull: { participants: user?._id }
         });
 
-        io.emit('leave-group-room', { room, userId: user?._id });
+        const updatedRoom = await Room.findById(roomId);
+        await updatedRoom?.populate({ path: 'participants', select: '_id name surname avatar status last_seen' })
+        await updatedRoom?.populate({ path: 'creator', select: '_id name surname avatar status last_seen' })
+
+        io.emit('leave-group-room', { room: updatedRoom, userId: user?._id });
 
         return res.status(200).json({ message: "Вы вышли из чата" })
 
@@ -236,7 +241,6 @@ export const kickOutOfGroup = async (req: Request, res: Response, next: NextFunc
     }
 };
 
-
 export const archive = async (req: Request, res: Response, next: NextFunction) => {
     const { roomId } = req.params;
 
@@ -280,3 +284,47 @@ export const unarchive = async (req: Request, res: Response, next: NextFunction)
         next(error);
     }
 }
+
+export const updateGroupRoomImage = async (req: Request, res: Response, next: NextFunction) => {
+    const { roomId } = req.params;
+    const room = await Room.findById(roomId);
+
+    if (!room) {
+        res.status(404);
+        throw new Error('Чат не найден');
+    }
+
+    if (!req.file) {
+        return res.status(200).json(room);
+    }
+
+    if (String(room.creator) !== String(req.user?._id)) {
+        res.status(401);
+        throw new Error('Право на смену аватара есть только у создателя чата');
+    }
+
+    const filename = req.file.filename;
+
+    const groupAvatarsFolderPath = join(__dirname, '../public/group_avatars');
+    if (room.imageGroup !== 'default-group.png') {
+        try {
+            await unlink(`${groupAvatarsFolderPath}/${room.imageGroup}`);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    try {
+        await room.updateOne({
+            $set: { imageGroup: filename }
+        })
+
+        const updatedRoom = await Room.findById(room._id);
+
+        io.emit("change-room-image", updatedRoom);
+        return res.status(201).json(updatedRoom);
+
+    } catch (error) {
+        next(error);
+    }
+};

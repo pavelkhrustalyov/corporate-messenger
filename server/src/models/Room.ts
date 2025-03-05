@@ -3,10 +3,10 @@ import { IMessageSchema } from "./Message";
 
 export interface IRoomSchema extends Document {
     creator?: Schema.Types.ObjectId;
-    type: 'private' | 'group';
+    type: 'private' | 'group' | 'video';
     title?: string; 
     participants: Schema.Types.ObjectId[];
-    lastMessage: string;
+    lastMessage: IMessageSchema | null;
     imageGroup?: string;
     messages: IMessageSchema[];
     archivedUsers: Schema.Types.ObjectId[];
@@ -21,7 +21,7 @@ const RoomSchema = new Schema<IRoomSchema>({
     },
     type: {
         type: String,
-        enum: ['private', 'group'],
+        enum: ['private', 'group', 'video'],
         required: true
     },
     title: String,
@@ -29,7 +29,11 @@ const RoomSchema = new Schema<IRoomSchema>({
         type: Schema.Types.ObjectId,
         ref: "User"
     }],
-    lastMessage: String,
+    lastMessage: {
+        type: Schema.Types.ObjectId,
+        ref: "Message",
+        default: null
+    },
     imageGroup: {
         type: String,
         default: "default-group.png"

@@ -1,6 +1,6 @@
 .room-list {
     position: relative;
-    height: 81vh;
+    height: 100%;
     overflow-y: scroll;
     background-color: var(--bg-support-color);
     border-radius: 10px;

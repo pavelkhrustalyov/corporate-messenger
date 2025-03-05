@@ -22,6 +22,26 @@ export const resizeAvatar = async (req: Request, res: Response, next: NextFuncti
     }
 };
 
+export const resizeImageGroup = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        if (!req.file) return next();
+        req.file.filename = `group-avatar-${req.user?._id}-${Date.now()}.jpeg`;
+
+        const avatarsFolderPath = path.join(__dirname, '../public/group_avatars');
+
+        await sharp(req.file.buffer)
+            .resize(150, 150, { fit: 'cover', withoutEnlargement: true })
+            .toFormat('jpeg')
+            .jpeg({ quality: 90 })
+            .toFile(`${avatarsFolderPath}/${req.file.filename}`);
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 export const resizeImageForMessage = async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (!req.file) return next();
@@ -35,9 +55,15 @@ export const resizeImageForMessage = async (req: Request, res: Response, next: N
                 .jpeg({ quality: 100 })
                 .toFile(`${avatarsFolderPath}/${req.file.filename}`);
         } else {
-            req.file.filename = `message-file-${req.user?._id}-${Date.now()}${path.extname(req.file.originalname)}`;
-            const messageFilesFolderPath = path.join(__dirname, '../public/files');
-            await fs.writeFile(`${messageFilesFolderPath}/${req.file.filename}`, req.file.buffer);
+            if (req.file.mimetype === "audio/mp3") {
+                req.file.filename = `voice-${req.user?._id}-${Date.now()}${path.extname(req.file.originalname)}`;
+                const messageFilesFolderPath = path.join(__dirname, '../public/voices');
+                await fs.writeFile(`${messageFilesFolderPath}/${req.file.filename}`, req.file.buffer);
+            } else {
+                req.file.filename = `message-file-${req.user?._id}-${Date.now()}${path.extname(req.file.originalname)}`;
+                const messageFilesFolderPath = path.join(__dirname, '../public/files');
+                await fs.writeFile(`${messageFilesFolderPath}/${req.file.filename}`, req.file.buffer);
+            }
         }
 
         next();

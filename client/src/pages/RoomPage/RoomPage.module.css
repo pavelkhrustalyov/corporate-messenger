@@ -10,3 +10,12 @@
     box-shadow: var(--box-shadow);
     background-color: var(--bg-support-color);
 }
+
+.more-messsage {
+    position: absolute;
+    width: 100%;
+    z-index: 10;
+    opacity: 0.3;
+    top: 75px;
+    border-radius: 0;
+}

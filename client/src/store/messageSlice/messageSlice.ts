@@ -10,12 +10,14 @@ interface IInitialState {
     messages: IMessage[];
     isLoading: boolean,
     isError: boolean,
+    replyMessageData: IMessage | null,
 }
 
 const initialState: IInitialState = {
     messages: [],
     isLoading: false,
     isError: false,
+    replyMessageData: null
 }
 
 export const getMessages = createAsyncThunk(
@@ -34,9 +36,26 @@ export const getMessages = createAsyncThunk(
 
 export const readMessages = createAsyncThunk(
     'messages/readMessages',
-    async (roomId: string) => {
+    async ({ roomId, limit }: {roomId: string, limit: number}) => {
         try {
-            const responce = await axios.patch<IMessage[]>(`${BASE_URL}/read-messages/${roomId}`);
+            const responce = await axios.patch<IMessage[]>(`${BASE_URL}/read-messages/${roomId}?limit=${limit}`);
+            return responce.data;
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                toast.error(error.response?.data.message)
+            } else {
+                console.log(error)
+            }
+        }
+    },
+)
+
+export const deleteMessageHandler = createAsyncThunk(
+    'messages/delete-message',
+    async ({ senderId, messageId }: { senderId: string, messageId: string }) => {
+        try {
+            const responce = await axios.delete<{messageId: string, senderId: string}>
+            (`${BASE_URL}/delete/${messageId}/${senderId}`);
             return responce.data;
         } catch (error) {
             if (error instanceof AxiosError) {
@@ -79,7 +98,13 @@ export const messageSlice = createSlice({
                 }
                 return message;
             })
-        }
+        },
+        setReply: (state, action: PayloadAction<IMessage>) => {
+            state.replyMessageData = action.payload;
+        },
+        clearReply: (state) => {
+            state.replyMessageData = null;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(getMessages.pending, (state) =>   {
@@ -104,8 +129,15 @@ export const messageSlice = createSlice({
             state.isError = false;
             state.isLoading = false;
         })
+
+        builder.addCase(deleteMessageHandler.fulfilled, 
+            (state, { payload }) => {
+            if (payload) {
+                state.messages = state.messages.filter(message => message._id !== payload.messageId);
+            }
+        })
     }
 });
 
 export default messageSlice.reducer;
-export const { createMessage, updateStatusInMessage, updateMessages, updateMessage } = messageSlice.actions;
+export const { createMessage, updateStatusInMessage, updateMessages, updateMessage, setReply, clearReply } = messageSlice.actions;

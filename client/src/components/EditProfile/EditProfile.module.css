@@ -1,0 +1,25 @@
+.edit-profile {
+    /* display: flex; */
+    /* flex-direction: column; */
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.input {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--icon-color);
+    margin-bottom: 10px;
+}
+
+.back {
+    margin-right: auto;
+    color: var(--text-support-color);
+}
+
+.heading {
+    margin-bottom: 15px;
+}

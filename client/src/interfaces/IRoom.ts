@@ -7,9 +7,9 @@ export interface IRoom {
     imageGroup?: string;
     title?: string;
     creator?: IUser;
-    type: 'private' | 'group';
+    type: 'private' | 'group' | 'video';
     participants: IUser[];
-    lastMessage: string;
+    lastMessage: IMessage;
     createdAt: string;
     updatedAt: string;
     archivedUsers: string[];

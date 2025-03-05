@@ -1,0 +1,18 @@
+.image-group {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.label {
+    position: relative;
+}
+
+.button {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: var(--bg-main-color);
+    z-index: 10000;
+    font-size: 13px;
+}

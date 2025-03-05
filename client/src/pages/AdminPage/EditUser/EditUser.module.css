@@ -1,0 +1,12 @@
+.title {
+    margin-bottom: 10px;
+}
+
+.data {
+    display: flex;
+    align-items: center;
+}
+
+.data button {
+    margin-left: 10px;
+}

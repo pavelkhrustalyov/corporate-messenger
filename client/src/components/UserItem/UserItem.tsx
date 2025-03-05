@@ -59,7 +59,7 @@ const UserItem = ({ user, addUserToRoom, userIds, deleteUser, room }: IPropsUser
             {
                 deleteUser && currentUser?._id !== user._id && 
                 currentUser?._id === room?.creator?._id &&
-                room?.type === 'group' &&
+                (room?.type === 'group' || room?.type === 'video') &&
                 <Button
                     className={styles.delete}
                     color='transparent'

@@ -1,7 +1,7 @@
 export const themes = {
   "light": {
     '--bg-base-color': "#EFF6FC",
-    '--bg-main-color': "#6E00FF",
+    '--bg-main-color': "purple",
     '--bg-support-color': "#FFF",
     '--main-hover': "lightgreen",
     '--ui-main-color': "lightgreen",
@@ -26,7 +26,8 @@ export const themes = {
     '--status-border-color': "white",
     '--box-shadow': "rgb(195,227,247)",
     '--text-main-color': "#000",
-    '--loader-color': "#6E00FF"
+    '--loader-color': "#6E00FF",
+    '--success-color': "lightgreen",
   },
 
   "dark": {
@@ -56,6 +57,7 @@ export const themes = {
     '--status-border-color': "white",
     '--box-shadow': "rgb(20, 33, 42)",
     '--text-main-color': "#fff",
-    '--loader-color': "lightgreen"
+    '--loader-color': "lightgreen",
+    '--success-color': "lightgreen",
   }
 }

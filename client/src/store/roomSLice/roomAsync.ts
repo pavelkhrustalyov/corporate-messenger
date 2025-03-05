@@ -1,15 +1,16 @@
 import axios, { AxiosError } from 'axios';
 import { AppDispatch } from '../store';
-import { closeGroupChatModal, closePrivateChatModal, closeRoomDataModal } from '../modalSlice/modalSlice';
+import { closeGroupChatModal, closePrivateChatModal, closeRoomDataModal, closeVideoChatModal } from '../modalSlice/modalSlice';
 import { toast } from 'react-toastify';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { IRoom } from '../../interfaces/IRoom';
+import { TypeRoom } from '../../types/types';
 
 const BASE_URL = '/api/room';
 
 interface IRoomCreateData {
     title?: string;
-    type: "private" | "group";
+    type: TypeRoom;
     users: string[];
 }
 
@@ -39,6 +40,7 @@ export const createRoom = createAsyncThunk<IRoom, IRoomCreateData>(
                 dispatch(closePrivateChatModal())
             } else {
                 dispatch(closeGroupChatModal())
+                dispatch(closeVideoChatModal())
             }
             return responce.data;
 
@@ -140,6 +142,23 @@ export const unarchiveRoom = createAsyncThunk(
     async (roomId: string) => {
         try {
             const responce = await axios.post(`${BASE_URL}/unarchive/${roomId}`);
+            return responce.data;
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                toast.error(error.response?.data.message);
+            } else {
+                console.log(error);
+            }
+        }
+    }
+)
+
+
+export const updateRoomImage = createAsyncThunk(
+    'rooms/updateRoomImage',
+    async ({ roomId, formData }: { roomId: string, formData: FormData }) => {
+        try {
+            const responce = await axios.patch(`${BASE_URL}/${roomId}/upload`, formData);
             return responce.data;
         } catch (error) {
             if (error instanceof AxiosError) {

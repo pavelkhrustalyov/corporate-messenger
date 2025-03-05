@@ -1,4 +1,5 @@
 .message-item {
+    position: relative;
    margin-left: 20px;
    display: flex;
    align-items: end;
@@ -20,7 +21,13 @@
 
 .message-item.type-image .message-data {
     background-color: transparent !important;
-    color: var(--text-dark-color) !important;
+    color: var(--text-support-color) !important;
+}
+
+
+.message-item.type-voice .message-data {
+    background-color: transparent !important;
+    color: var(--text-support-color) !important;
 }
 
 .message-item.type-image .message-data .image {
@@ -35,6 +42,7 @@
 
 .message-text {
     margin-bottom: 5px;
+    font-size: 20px;
 }
 
 .message-item.my .message-data {
@@ -93,7 +101,7 @@
     align-items: center;
     margin-bottom: 10px;
     color: var(--text-support-color);
-    font-size: 20px;
+    font-size: 16px;
     display: flex;
     align-items: center;
     text-decoration: none;
@@ -101,7 +109,7 @@
 }
 
 .file-text {
-    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .size {
@@ -109,11 +117,10 @@
     font-weight: 300;
 }
 
-
 .icon {
     padding: 3px;
     border-radius: 100%;
-    background-color: var(--text-support-color);
+    color: var(--text-light-color);
     font-size: 30px;
 }
 
@@ -122,4 +129,100 @@
     right: 0;
     bottom: 0;
     color: var(--border-color);
+}
+
+.delete-message {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 5px;
+    border-radius: 100%;
+    line-height: 1;
+    cursor: pointer;
+    background-color: red;
+}
+
+.image-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.image {
+    transition: filter 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    filter: blur(10px);
+    opacity: 0.7;
+    width: 100%;
+    height: auto;
+}
+
+.image-loaded {
+    filter: blur(0);
+    opacity: 1;
+}
+
+.image-placeholder {
+    background-color: #f0f0f0;
+}
+
+.loading-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #888;
+    font-size: 14px;
+}
+
+.audio-wrapper {
+    position: relative;
+}
+
+.audio {
+    transition: opacity 0.3s ease-in-out;
+    opacity: 0.7;
+}
+
+.audio-loaded {
+    opacity: 1;
+}
+
+.context {
+    padding: 10px;
+    background-color: var(--bg-main-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.context span {
+    cursor: pointer;
+    color: var(--text-light-color);
+    margin-top: 10px;
+}
+
+.context span:first-child {
+    margin-top: 0;
+}
+
+.reply {
+    padding: 5px;
+    background-color: var(--button-hover);
+    border-radius: 5px;
+    color: var(--text-light-color);
+    border-left: 4px solid var(--group-sender-color);
+}
+
+
+.reply-image {
+    height: 60px;
+    border-radius: 5px;
+}
+
+.reply-author {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.reply-icon {
+    margin-right: 10px;
 }

@@ -8,9 +8,10 @@ import Input from '../UI/Input/Input';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store/store';
 import { createRoom } from '../../store/roomSlice/roomSlice';
+import { TypeRoom } from '../../types/types';
 
 interface IPropsCreateRoom {
-    typeRoom: "private" | "group"
+    typeRoom: TypeRoom
 }
 
 const CreateRoom = ({ typeRoom }: IPropsCreateRoom) => {
@@ -31,7 +32,7 @@ const CreateRoom = ({ typeRoom }: IPropsCreateRoom) => {
     };
 
     const createChat = () => {
-        if (typeRoom === "group") {
+        if (typeRoom === "group" || typeRoom === "video") {
             if (!title.trim().length) {
                 toast.error("Имя группы не может быть пустым")
                 return;
@@ -56,14 +57,32 @@ const CreateRoom = ({ typeRoom }: IPropsCreateRoom) => {
             dispatch(createRoom(data));
         }
     }
+    let roomTypeTitle: string;
+
+    switch (typeRoom) {
+        case "group":
+            roomTypeTitle = "Создать групповой чат";
+            break;
+        case "private":
+            roomTypeTitle = "Создать приватный чат";
+            break;
+        case "video": 
+            roomTypeTitle = "Создать видео чат"
+            break;
+        default:
+            roomTypeTitle = "";
+    }
 
     return (
         <div className={styles['create-room']}>
             <ToastContainer />
-            <Headling className={styles.title} element='h2'>{typeRoom === 'private' ? "Создать приватный чат" : "Создать групповой чат"}</Headling>
+            <Headling className={styles.title} element='h2'>{roomTypeTitle}</Headling>
             <Button
                 onClick={() => setIsOpenSearch(true)} 
-                color='primary'>{typeRoom === 'group' ? "Добавить участников" : "Добавить собеседника"}
+                color='primary'>{typeRoom === 'group' || 
+                    typeRoom === 'video'  ? 
+                    "Добавить участников" : 
+                    "Добавить собеседника"}
             </Button>
           
 
@@ -71,7 +90,7 @@ const CreateRoom = ({ typeRoom }: IPropsCreateRoom) => {
                 <div className={styles.controllers}>
                     <UserList userIds={userIds} addUserToRoom={addUserToRoom} />
                     {
-                        typeRoom === "group" && (
+                        (typeRoom === "group" || typeRoom === 'video') && (
                             <Input
                                 className={styles['title-field']}
                                 value={title} 

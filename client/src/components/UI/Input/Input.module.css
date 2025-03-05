@@ -1,8 +1,13 @@
 .input {
     font-size: 17px;
+    background-color: var(--bg-support-color);
     color: var(--text-support-color);
     border: none;
     outline: none;
+}
+
+.input::placeholder {
+    color: var(--placeholder-color);
 }
 
 .file {
@@ -15,4 +20,10 @@
 
 .input-file {
     display: none;
+}
+
+.label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
 }

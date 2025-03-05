@@ -19,7 +19,7 @@ router.post('/register', [
     check('phone', 'Номер телефона обязателен').isNumeric(),
     check('name', 'Имя обязательно').not().isEmpty().trim(),
     check('surname', 'Фамилия обязательна').not().isEmpty().trim(),
-    check('patronymic', 'Отчество обязателно').not().isEmpty().trim(),
+    check('patronymic', 'Отчество обязателно').not().isEmpty().trim()
 ], register);
 
 router.get('/logout', logOut);

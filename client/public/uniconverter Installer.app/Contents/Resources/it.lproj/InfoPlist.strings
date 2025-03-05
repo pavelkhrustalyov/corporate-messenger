@@ -1,0 +1,16 @@
+/*
+InfoPlist.strings
+ProductInstaller
+
+Created by SZ13031814M01 on 13/06/2019.
+Copyright © 2019 PE. All rights reserved.
+*/
+"PID" = "14214";
+"Language" = "it";
+"CFBundleName" = "Installatore di uniconverter";
+"CFBundleDisplayName" = "Installatore di uniconverter";
+"NSHumanReadableCopyright" = "Copyright © 2023 Wondershare.\nTutti i Diritti Riservati.";
+"CustomerServiceURL" = "http://cbs.wondershare.com/go.php?pid=14214&m=dc";
+"ProductPageURL" = "http://cbs.wondershare.com/go.php?pid=14214&m=dp";
+"UserAgreementURL" = "http://pop.wondershare.it/license.html#license";
+"PrivacyPolicyURL" = "http://pop.wondershare.it/license.html#privacy";

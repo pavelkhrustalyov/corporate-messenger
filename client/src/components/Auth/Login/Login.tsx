@@ -11,11 +11,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { setCredentials } from '../../../store/authSlice/authSlice';
 import { RootState } from '../../../store/store';
 import socket from '../../../utils/testSocket';
-
-interface LoginForm {
-    email: string;
-    password: string;
-}
+import { LoginForm } from '../../../interfaces/LoginForm';
 
 interface CustomError extends Error {
     data?: { message: string };

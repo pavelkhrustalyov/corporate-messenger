@@ -1,22 +1,24 @@
 import { forwardRef } from 'react';
 import styles from './Input.module.css';
 import cn from 'classnames';
-import { MdAttachFile } from 'react-icons/md';
+import { IInputProps } from './IInputProps';
 
-const Input = forwardRef<HTMLInputElement, IInputProps>(({ className, ...props }, ref) => {
+const Input = forwardRef<HTMLInputElement, IInputProps>(({ className, label, id, icon, ...props }, ref) => {
     return (
         <>
             {
                 props.type === 'file' ? (
                     <div className={styles['file-container']}>
-                        <input 
-                            id='file'
-                            className={cn(styles['input-file'], className, {})} 
-                            ref={ref}
-                            {...props}
-                        />
-                        <label htmlFor="file">
-                            <img className={styles.file} src="../file.svg" alt="Smile" />
+                        
+                        <label className={styles.label} htmlFor={id}>
+                            <input 
+                                id={id}
+                                className={cn(styles['input-file'], className, {})} 
+                                ref={ref}
+                                {...props}
+                            />
+                            { label && <span className={styles['label-text']}>{label}</span> }
+                            { icon && <img className={styles.file} src="../file.svg" alt="Smile" /> }
                         </label>
                     </div>
                 ) : (

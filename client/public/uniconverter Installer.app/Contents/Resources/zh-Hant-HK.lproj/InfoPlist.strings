@@ -1,0 +1,16 @@
+/*
+InfoPlist.strings
+ProductInstaller
+
+Created by SZ13031814M01 on 13/06/2019.
+Copyright © 2019 PE. All rights reserved.
+*/
+"PID" = "14214";
+"Language" = "zh-Hant";
+"CFBundleName" = "uniconverter安裝程序";
+"CFBundleDisplayName" = "uniconverter安裝程序";
+"NSHumanReadableCopyright" = "Copyright © 2023 Wondershare. 保留所有權利。";
+"CustomerServiceURL" = "http://cbs.wondershare.com/go.php?pid=14214&m=dc";
+"ProductPageURL" = "http://cbs.wondershare.com/go.php?pid=14214&m=dp";
+"UserAgreementURL" = "https://www.wondershare.cn/product-privacy.html#license";
+"PrivacyPolicyURL" = "https://www.wondershare.cn/product-privacy.html#privacy";

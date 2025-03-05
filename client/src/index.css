@@ -3,7 +3,6 @@ body {
     padding: 0;
     font-family: "Open Sans", sans-serif;
     background-color: var(--bg-base-color);
-    /* background-image: url("https://fonoteka.top/uploads/posts/2022-02/1645148901_4-phonoteka-org-p-temnie-foni-dlya-telegramma-5.jpg"); */
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -12,7 +11,7 @@ body {
 :root {
     /* -- LIGHT THEME */
     --bg-base-color: #EFF6FC;
-    --bg-main-color: #6E00FF;
+    --bg-main-color: purple;
     --bg-support-color: #FFF;
     --main-hover: lightgreen;
     --ui-main-color: lightgreen;
@@ -38,4 +37,5 @@ body {
     --box-shadow: rgb(195,227,247);
     --text-main-color: #000;
     --loader-color: #6E00FF;
+    --success-color: lightgreen;
 }
